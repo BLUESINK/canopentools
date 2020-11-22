@@ -1,6 +1,7 @@
 import argparse
 from genslave import genslave
 from gendoc import gendoc
+from genmaster import genmaster
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser(description='BLUESINK CANOpen Tools')
@@ -12,8 +13,7 @@ if __name__ == '__main__' :
 	parser_a.add_argument('OUTPUT_PATH', type=str, help='Destination folder path of CANOpen Slave Stack Code')
 
 	parser_b = subparsers.add_parser('genmaster', help='CANOpen Master Stack Code generator')
-	parser_b.add_argument("--opt3", action='store_true')
-	parser_b.add_argument("--opt4", action='store_true')
+	parser_b.add_argument('OUTPUT_PATH', type=str, help='Destination folder path of CANOpen Master Stack Code')
 
 	parser_c = subparsers.add_parser('gendoc', help='Document generator based on EDS file')
 	parser_c.add_argument('--show', action='store_true', help='Show Object Dictionary Tree')
@@ -27,3 +27,5 @@ if __name__ == '__main__' :
 		genslave.generate(args.EDS_FILE, args.OUTPUT_PATH, args.show)
 	if args.cmd == 'gendoc' :
 		gendoc.generate(args.EDS_FILE, args.DESC_PATH, args.OUTPUT_PATH, args.show)
+	if args.cmd == 'genmaster' :
+		genmaster.generate(args.OUTPUT_PATH)
