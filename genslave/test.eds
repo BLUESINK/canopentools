@@ -1,0 +1,400 @@
+[FileInfo]
+CreatedBy=SAN
+ModifiedBy=OTH
+Description=Electronic Data Sheet for EPOS2 24/5
+CreationTime=05:25PM
+CreationDate=02-29-2020
+ModificationTime=05:25PM
+ModificationDate=02-29-2020
+FileName=test.eds
+FileVersion=2
+FileRevision=0
+EDSVersion=4.0
+
+[DeviceInfo]
+VendorName=maxon motor ag
+VendorNumber=000
+ProductName=EPOS2 24/5
+OrderCode=367676
+BaudRate_10=0
+BaudRate_20=1
+BaudRate_50=1
+BaudRate_125=1
+BaudRate_250=1
+BaudRate_500=1
+BaudRate_800=1
+BaudRate_1000=1
+SimpleBootUpMaster=0
+SimpleBootUpSlave=1
+Granularity=8
+DynamicChannelsSupported=0
+CompactPDO=0
+GroupMessaging=0
+NrOfRXPDO=1
+NrOfTXPDO=1
+LSS_Supported=1
+
+[DummyUsage]
+Dummy0001=0
+Dummy0002=0
+Dummy0003=0
+Dummy0004=0
+Dummy0005=0
+Dummy0006=0
+Dummy0007=0
+;******************************************************************
+;Object Dictionary
+;*****************************************************************
+
+[Comments]
+Lines=4
+Line1=Software Version:    0x2125
+Line2=Hardware Version:    0x6220
+Line3=Application Number:  0x0000
+Line4=Application Version: 0x0000
+
+[MandatoryObjects]
+SupportedObjects=3
+1=0x1000
+2=0x1001
+3=0x1018
+
+[1000]
+ParameterName=Device Type
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+ObjFlags=0x1
+
+[1001]
+ParameterName=Error Register
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+PDOMapping=0
+ObjFlags=0x1
+
+[1018]
+ParameterName=Identity Object
+ObjectType=0x9
+SubNumber=5
+
+[1018sub0]
+ParameterName=Number of entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=4
+PDOMapping=0
+LowLimit=1
+HighLimit=4
+
+[1018sub1]
+ParameterName=Vendor Id
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=000
+PDOMapping=0
+
+[1018sub2]
+ParameterName=Product Code
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1018sub3]
+ParameterName=Revision number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1018sub4]
+ParameterName=Serial number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[OptionalObjects]
+SupportedObjects=5
+1=0x1008
+2=0x1400
+3=0x1600
+4=0x1800
+5=0x1A00
+
+[1008]
+ParameterName=Manufacturer Device Name
+ObjectType=0x7
+DataType=0x0009
+AccessType=const
+PDOMapping=0
+ObjFlags=0x1
+
+[1400]
+ParameterName=Receive PDO 1 Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1400sub0]
+ParameterName=Internal Largest SubIndex Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+ObjFlags=3
+
+[1400sub1]
+ParameterName=COB-ID used by RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x200
+PDOMapping=0
+ObjFlags=0
+
+[1400sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0xFF
+PDOMapping=0
+ObjFlags=0
+;******************************************************************
+;   Receive PDO 2 parameter
+;******************************************************************
+
+[1600]
+ParameterName=Receive PDO 1 Mapping
+ObjectType=0x9
+SubNumber=9
+
+[1600sub0]
+ParameterName=Number of Mapped Application Objects in RxPDO 1
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=8
+ObjFlags=0
+
+[1600sub1]
+ParameterName=1st Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x60400010
+PDOMapping=0
+ObjFlags=0
+
+[1600sub2]
+ParameterName=2nd Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub3]
+ParameterName=3rd Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub4]
+ParameterName=4th Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub5]
+ParameterName=5th Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub6]
+ParameterName=6th Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub7]
+ParameterName=7th Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1600sub8]
+ParameterName=8th Mapped Object in RxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+;******************************************************************
+;   Receive PDO 2 mapping
+;******************************************************************
+
+[1800]
+ParameterName=Transmit PDO 1 Parameter
+ObjectType=0x9
+SubNumber=4
+
+[1800sub0]
+ParameterName=Internal Largest SubIndex Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+ObjFlags=3
+
+[1800sub1]
+ParameterName=COB-ID used by TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x40000180
+PDOMapping=0
+ObjFlags=0
+
+[1800sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0xFF
+PDOMapping=0
+ObjFlags=0
+
+[1800sub3]
+ParameterName=Inhibit Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=10
+PDOMapping=0
+ObjFlags=0
+;******************************************************************
+;   Transmit PDO 2 parameter
+;******************************************************************
+
+[1A00]
+ParameterName=Transmit PDO 1 Mapping
+ObjectType=0x9
+SubNumber=9
+
+[1A00sub0]
+ParameterName=Number of Mapped Application Objects in TxPDO 1
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=8
+ObjFlags=0
+
+[1A00sub1]
+ParameterName=1st Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x60410010
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub2]
+ParameterName=2nd Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub3]
+ParameterName=3rd Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub4]
+ParameterName=4th Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub5]
+ParameterName=5th Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub6]
+ParameterName=6th Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub7]
+ParameterName=7th Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+
+[1A00sub8]
+ParameterName=8th Mapped Object in TxPDO 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x00000000
+PDOMapping=0
+ObjFlags=0
+;******************************************************************
+;   Transmit PDO 2 mapping
+;******************************************************************
+
+[ManufacturerObjects]
+SupportedObjects=0

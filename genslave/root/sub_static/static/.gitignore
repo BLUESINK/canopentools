@@ -1,0 +1,4 @@
+source/*
+!source/*_appl.c
+include/
+GEN_HISTORY.txt

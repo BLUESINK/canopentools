@@ -1,0 +1,14 @@
+/*
+* Name : BLUESINK ODgen
+* Author : YongJae Kim (bluesink@bluesink.io)
+* Version : {{ version }}
+* Description : Generate CANOpen Slave Stack code based on
+*               CiA 301 (V4.2) : Application layer and communication profile
+*               CiA 306 (V1.3) : Electronic data sheet specification for CANOpen
+*
+* Generated Date : {{ date }}
+*
+* !!! You must only be used internally within the company !!!
+*/
+
+

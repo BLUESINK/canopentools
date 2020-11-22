@@ -1,0 +1,1 @@
+BLUESINK odgen {{ data.version }}

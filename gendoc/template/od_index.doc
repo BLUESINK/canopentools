@@ -1,0 +1,68 @@
+/*! \page {{ data['prefix'] }}_{{ data['name'] }} [0x{{ data['name'] }}] {{ data['data']['ParameterName'] }}
+<table>
+	<tr>
+		<th width="30%">Name</th>
+		<td>\ref {{ data['prefix'] }}_{{ data['name'] }} "{{ data['data']['ParameterName'] }}"</td>
+	</tr>
+	<tr>
+		<th>Number of entries</th>
+		<td>{{ data['child'] | length }}</td>
+	</tr>
+	<tr>
+		<td colspan='2' style="border-width: 0 0 0 0">
+			{{ data['description'] }}
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<th colspan='2'>Subindex List</th>
+	</tr>
+{% for _,index in data['child'].items() -%}
+	<tr>
+		<td {% if index.data['PDOMapping'] != '1' %}colspan='2'{% endif %}>
+		\ref {{ data['prefix'] }}_{{ data['name'] }}_{{ index['name'] }} "[0x{{ data['name'] }}, {{ index['name'] }}] {{ index.data['ParameterName'] }}" 
+		</td>
+		{%- if index.data['PDOMapping'] == '1' %}
+		<td width="10%" style="text-align: center;">
+			<b>PDO</b>
+		</td>
+		{% endif -%}
+	</tr>
+{% endfor -%}
+</table>
+
+{% for _,index in data['child'].items() %}
+\anchor {{ data['prefix'] }}_{{ data['name'] }}_{{ index['name'] }}
+<table>
+	<tr>
+		<th width="30%">Name</th>
+		<td colspan='3'>\ref {{ data['prefix'] }}_{{ data['name'] }}_{{ index['name'] }} "{{ index.data['ParameterName'] }}"</td>
+	</tr>
+	<tr>
+		<th>Index</th>
+		<td>0x{{ data['name'] }}</td>
+		<th width="15%">Subindex</th>
+		<td>{{ index['name'] }}</td>
+	</tr>
+	<tr>
+		<th>Type</th>
+		<td colspan='3'>{{ index.data['DataTypeStr'][3] }}</td>
+	</tr>
+	<tr>
+		<th>Access</th>
+		<td colspan='3'>{{ index.data['AccessType'] }}{% if index.data['PDOMapping'] == '1' %} <b>[PDO Mappable]</b>{% endif %}</td>
+	</tr>
+	<tr>
+		<th>Default Value</th>
+		<td colspan='3'>{{ index.data['DefaultValue'] }}</td>
+	</tr>
+	<tr>
+		<td colspan='4' style="border-width: 0 0 0 0">
+			{{ index['description'] }}
+		</td>
+	</tr>
+</table>
+{% endfor %}
+*/

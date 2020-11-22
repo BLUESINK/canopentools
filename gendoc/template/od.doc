@@ -1,0 +1,13 @@
+{%- set OD = data['child']['OD']['child'] -%}
+/*! \page {{ data['prefix'] }} Object Dictionary
+<table>
+	<tr>
+		<th>Index List</th>
+	</tr>
+{%- for _,index in OD.items() %}
+		<tr>
+			<td>\subpage {{ data['prefix'] }}_{{ index['name'] }}</td>
+		</tr>
+{%- endfor -%}
+</table>
+*/
