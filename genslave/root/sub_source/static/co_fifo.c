@@ -8,7 +8,7 @@ void Canopen_FIFO_Loop(){
 
 }
 
-bool Canopen_PutFIFO(CAN_FRAME* elem){
+bool Canopen_PutTxFIFO(CAN_FRAME* elem){
 
   uint8_t next_pointerIn = (co_fifo_pointerIn + 1) % CO_FIFO_NUM;
   
@@ -23,7 +23,7 @@ bool Canopen_PutFIFO(CAN_FRAME* elem){
   return true;
 }
 
-bool Canopen_GetFIFO(CAN_FRAME* elem){
+bool Canopen_GetTxFIFO(CAN_FRAME* elem){
 
   if(co_fifo_pointerOut == co_fifo_pointerIn) return false;
 

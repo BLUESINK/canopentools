@@ -209,7 +209,7 @@ void Canopen_rxSDO(uint8_t* data){
     if(abortCode != 0) break;
     
     // Response
-    Canopen_PutFIFO(&_canopen.res);
+    Canopen_PutTxFIFO(&_canopen.res);
     return;
     
   case 1 : // Initiate download request
@@ -222,7 +222,7 @@ void Canopen_rxSDO(uint8_t* data){
     if(abortCode != 0) break;
 
     // Response
-    Canopen_PutFIFO(&_canopen.res);
+    Canopen_PutTxFIFO(&_canopen.res);
     return;
     
   case 2 : // Initiate upload request
@@ -242,7 +242,7 @@ void Canopen_rxSDO(uint8_t* data){
     if(_canopen.od_res.BitLength < 33) Canopen_SDOupload_Expedited(&_canopen); // Expedited SDO Upload
     else Canopen_SDOupload_Normal_Initiate(&_canopen); // Normal SDO Upload Init
     if(abortCode != 0) break;
-    Canopen_PutFIFO(&_canopen.res);
+    Canopen_PutTxFIFO(&_canopen.res);
     return; 
     
   case 3 : // Upload segment request
@@ -254,7 +254,7 @@ void Canopen_rxSDO(uint8_t* data){
     
     // 2. Response
     Canopen_SDOupload_Segment(&_canopen, (data[0] & 0x10) >> 4);
-    Canopen_PutFIFO(&_canopen.res);
+    Canopen_PutTxFIFO(&_canopen.res);
     return;
     
   case 5 : // Block Upload
@@ -267,5 +267,5 @@ void Canopen_rxSDO(uint8_t* data){
   // Error Code
   Canopen_SDOabort(&_canopen.res, _canopen.od_res.Index, _canopen.od_res.SubIndex);
   
-  Canopen_PutFIFO(&_canopen.res);
+  Canopen_PutTxFIFO(&_canopen.res);
 }

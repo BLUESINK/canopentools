@@ -96,7 +96,7 @@ void Canopen_txPDO_Proc(uint8_t channel){
   _canopen.res.len = (pdoMappingBitOffset - 1) / 8 + 1;
   memcpy(_canopen.res.data, &dummy64, 8);
   
-  Canopen_PutFIFO(&_canopen.res);
+  Canopen_PutTxFIFO(&_canopen.res);
   
   return;
 }
