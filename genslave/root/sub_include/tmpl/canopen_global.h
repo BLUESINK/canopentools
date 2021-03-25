@@ -30,13 +30,11 @@
 
 #define HTBT   0x0E
 
-typedef struct CANOPEN_RES{
+typedef struct CAN_FRAME{
   uint16_t cob_id;
-  uint16_t loop_count;
-  uint16_t expire_count;
   uint8_t len;
   uint8_t data[8];
-}CANOPEN_RES;
+}CAN_FRAME;
 
 typedef enum CANOPEN_STATE{
   INITIALISING_STATE,
@@ -47,7 +45,7 @@ typedef enum CANOPEN_STATE{
 
 typedef struct CANOPEN{
   uint8_t               node_id;
-  CANOPEN_RES           res;
+  CAN_FRAME             res;
   CANOPEN_STATE         state;
   OD_INTERFACE          od_res;
   OD_INTERFACE          od_req;

@@ -25,7 +25,7 @@ uint32_t Canopen_ODstate_to_AbortCode(OD_STATE odState){
   }
 }
 
-void Canopen_SDOabort(CANOPEN_RES* res, uint16_t Index, uint8_t subIndex){
+void Canopen_SDOabort(CAN_FRAME* res, uint16_t Index, uint8_t subIndex){
   
   res->data[0] = 0x80;
   res->data[1] = (uint8_t)Index;

@@ -78,6 +78,6 @@ void Canopen_Loop(uint8_t cmd, uint8_t* data){
   
 }
 
-bool Canopen_GetFrame(CANOPEN_RES* elem){
+bool Canopen_GetFrame(CAN_FRAME* elem){
   return Canopen_GetFIFO(elem);
 }

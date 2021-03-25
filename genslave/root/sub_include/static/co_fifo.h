@@ -6,7 +6,7 @@
 #include "canopen_global.h"
 
 extern void Canopen_FIFO_Loop();
-extern bool Canopen_PutFIFO(CANOPEN_RES* elem);
-extern bool Canopen_GetFIFO(CANOPEN_RES* elem);
+extern bool Canopen_PutFIFO(CAN_FRAME* elem);
+extern bool Canopen_GetFIFO(CAN_FRAME* elem);
 
 #endif
