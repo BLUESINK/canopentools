@@ -1,5 +1,8 @@
+#include "canopen_config.h"
+
 #include "cia301.h"
 #include "OD_access.h"
+#include "pdo.h"
 
 #if NrOfRXPDO > 0
 extern CANOPEN_PDO RPDO[NrOfRXPDO];
