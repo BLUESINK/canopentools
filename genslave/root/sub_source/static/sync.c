@@ -1,5 +1,6 @@
 #include "canopen_config.h"
 
+#include "canopen_global.h"
 #include "sync.h"
 #include "pdo.h"
 
@@ -13,7 +14,10 @@ extern CANOPEN_PDO TPDO[NrOfTXPDO];
 void Canopen_SYNC(){
 
   uint8_t i;
-#if NrOfRXPDO > 0  
+#if NrOfRXPDO > 0
+
+  if(_canopen.state != OPERATIONAL_STATE) return;
+
   // RPDO Process
   for(i = 0; i < NrOfRXPDO; i++){
     if(!RPDO[i].valid && RPDO[i].new_data == 1){
@@ -30,6 +34,9 @@ void Canopen_SYNC(){
 #endif
 
 #if NrOfTXPDO > 0
+
+  if(_canopen.state != OPERATIONAL_STATE) return;
+
   // TPDO Process
   for(i = 0; i < NrOfTXPDO; i++){
     if(!TPDO[i].valid){

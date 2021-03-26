@@ -9,15 +9,15 @@ void Canopen_NMT(uint8_t* data){
   
   switch(data[0]){
   case 0x01: // Switch to "Operational"
-    Canopen_Application_ChangeState(_canopen.state, OPERATIONAL_STATE);
+    if(_canopen.state == PRE_OPERATIONAL_STATE) _canopen.state = OPERATIONAL_STATE;
     break;
     
   case 0x02: // Switch to "Stop"
-    Canopen_Application_ChangeState(_canopen.state, STOPPPED_STATE);
+    // TODO
     break;
     
   case 0x80: // Switch to "Pre-Operational"
-    Canopen_Application_ChangeState(_canopen.state, PRE_OPERATIONAL_STATE);
+    if(_canopen.state == OPERATIONAL_STATE) _canopen.state = PRE_OPERATIONAL_STATE;
     break;
     
   case 0x81: // Reset Node

@@ -87,6 +87,8 @@ void Canopen_Loop(){
 
     default:
 #if NrOfRXPDO > 0
+      if(_canopen.state != OPERATIONAL_STATE) break;
+
       for(i = 0; i < NrOfRXPDO; i++){
         if((frame.cob_id == RPDO[i].cob_id) && RPDO[i].valid){
           Canopen_rxPDO(frame.data, i+1);

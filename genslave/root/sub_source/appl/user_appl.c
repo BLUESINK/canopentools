@@ -1,5 +1,6 @@
 {{ signature -}}
 #include "user_appl.h"
+#include "canopen.h"
 #include "OD_access.h"
 
 /* USER CODE BEGIN Includes */
@@ -37,6 +38,8 @@ uint32_t Canopen_Application_AfterGetData(uint16_t Index, uint8_t subIndex){
 /* USER CODE END 4 */
 
 // Call when NMT State changed requested
+// Only RESET_APPLICATION_STATE, RESET_COMMUNICATION_STATE requests are requested with this function.
+// Other state transitions are handled automatically.
 // You can call Canopen_ChangeState() functions to change NMT state
 void Canopen_Application_ChangeState(CANOPEN_STATE curr_state, CANOPEN_STATE req_state){
   /* USER CODE BEGIN 5 */
