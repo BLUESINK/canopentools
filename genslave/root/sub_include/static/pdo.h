@@ -9,6 +9,7 @@ typedef struct{
   uint8_t PDO_TransType;
   uint8_t valid;
   uint8_t new_data;
+  uint16_t cob_id;
 }CANOPEN_PDO;
 
 extern void Canopen_txPDO_Proc(uint8_t channel);

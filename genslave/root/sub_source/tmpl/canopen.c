@@ -30,6 +30,7 @@ void Canopen_Init(uint8_t canID){
   {%- set index = 5120 + n %}
   RPDO[{{ n }}].PDO_TransType = OD_0x{{ '%04X' % index }}_02;
   RPDO[{{ n }}].valid = OD_0x{{ '%04X' % index }}_01 & 0x80000000 ? 1 : 0;
+  RPDO[{{ n }}].cob_id = OD_0x{{ '%04X' % index }}_01 & 0x000007FF; 
   {%- endfor %}
 
   // Set TPDO Default Transtype
@@ -38,6 +39,7 @@ void Canopen_Init(uint8_t canID){
   {%- set index = 6144 + n %}
   TPDO[{{ n }}].PDO_TransType = OD_0x{{ '%04X' % index }}_02;
   TPDO[{{ n }}].valid = OD_0x{{ '%04X' % index }}_01 & 0x80000000 ? 1 : 0;
+  TPDO[{{ n }}].cob_id = OD_0x{{ '%04X' % index }}_01 & 0x000007FF; 
   {%- endfor %}
 
   _canopen.state = PRE_OPERATIONAL_STATE;
@@ -46,25 +48,10 @@ void Canopen_Init(uint8_t canID){
 void Canopen_Loop(){
 
   CAN_FRAME frame;
+  uint8_t i;
 
   while(Canopen_GetRxFIFO(&frame)){
     switch(frame.cob_id >> 7){
-    case rxPDO1:
-      Canopen_rxPDO(frame.data, 1);
-      break;
-
-    case rxPDO2:
-      Canopen_rxPDO(frame.data, 2);
-      break;
-
-    case rxPDO3:
-      Canopen_rxPDO(frame.data, 3);
-      break;
-
-    case rxPDO4:
-      Canopen_rxPDO(frame.data, 4);
-      break;
-
     case rxSDO:
       Canopen_rxSDO(frame.data);
       break;
@@ -82,6 +69,16 @@ void Canopen_Loop(){
       
     case TIME:
       break;
+
+    default:
+#if NrOfRXPDO > 0
+    for(i = 0; i < NrOfRXPDO; i++){
+      if((frame.cob_id == RPDO[i].cob_id) && RPDO[i].valid){
+        Canopen_rxPDO(frame.data, i+1);
+        break;
+      }
+    }
+#endif
     }
   }
   

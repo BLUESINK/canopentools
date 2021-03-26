@@ -90,12 +90,7 @@ void Canopen_txPDO_Proc(uint8_t channel){
     
   }
   
-  switch(channel){
-  case 1 : _canopen.res.cob_id = (uint16_t)txPDO1 << 7 | (uint16_t)_canopen.node_id; break;
-  case 2 : _canopen.res.cob_id = (uint16_t)txPDO2 << 7 | (uint16_t)_canopen.node_id; break;
-  case 3 : _canopen.res.cob_id = (uint16_t)txPDO3 << 7 | (uint16_t)_canopen.node_id; break;
-  case 4 : _canopen.res.cob_id = (uint16_t)txPDO4 << 7 | (uint16_t)_canopen.node_id; break;
-  }
+  _canopen.res.cob_id = TPDO[channel-1].cob_id;
   _canopen.res.len = (pdoMappingBitOffset - 1) / 8 + 1;
   memcpy(_canopen.res.data, &dummy64, 8);
   
