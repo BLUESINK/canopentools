@@ -219,7 +219,7 @@ void Canopen_SDOupload_Segment(CANOPEN* co, uint8_t toggle_bit){ // CiA 301 V4.2
 /******************************************************************************/
 void Canopen_rxSDO(uint8_t* data){
   
-  _canopen.res.cob_id = (uint16_t)txSDO << 7 | (uint16_t)_canopen.node_id;
+  _canopen.res.cob_id = (uint16_t)0x580 | (uint16_t)_canopen.node_id;
   _canopen.res.len = 8;
   
   uint8_t ccs = (data[0] & 0xE0) >> 5;

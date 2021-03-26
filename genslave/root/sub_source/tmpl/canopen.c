@@ -17,6 +17,23 @@ extern CANOPEN_PDO RPDO[NrOfRXPDO];
 extern CANOPEN_PDO TPDO[NrOfTXPDO];
 #endif
 
+CANOPEN_STATE Canopen_GetState(){
+  return _canopen.state;
+}
+
+void Canopen_ChangeState(CANOPEN_STATE state){
+  _canopen.state = state;
+
+  // NMT slave produce boot-up protocol after entered pre-op.
+  if(state == PRE_OPERATIONAL_STATE){
+    CAN_FRAME frame;
+    frame.cob_id = 0x700 | _canopen.node_id;
+    frame.len = 1;
+    frame.data[0] = 0x00;
+    Canopen_PutTxFIFO(&frame);
+  }
+}
+
 void Canopen_Init(uint8_t canID){
   _canopen.node_id = canID;
   _canopen.state = INITIALISING_STATE;
@@ -41,8 +58,6 @@ void Canopen_Init(uint8_t canID){
   TPDO[{{ n }}].valid = OD_0x{{ '%04X' % index }}_01 & 0x80000000 ? 1 : 0;
   TPDO[{{ n }}].cob_id = OD_0x{{ '%04X' % index }}_01 & 0x000007FF; 
   {%- endfor %}
-
-  _canopen.state = PRE_OPERATIONAL_STATE;
 }
 
 void Canopen_Loop(){
@@ -52,33 +67,34 @@ void Canopen_Loop(){
 
   while(Canopen_GetRxFIFO(&frame)){
     switch(frame.cob_id >> 7){
-    case rxSDO:
+    case 0x0C: // RX-SDO
       Canopen_rxSDO(frame.data);
       break;
       
-    case HTBT:
+    case 0x0E: // Heartbeat
       break;
 
-    case NMT:
+    case 0x00: // NMT
       Canopen_NMT(frame.data);
       break;
       
-    case SYNC:
+    case 0x01: // SYNC
       Canopen_SYNC();
       break;
       
-    case TIME:
+    case 0x02: // TIME
       break;
 
     default:
 #if NrOfRXPDO > 0
-    for(i = 0; i < NrOfRXPDO; i++){
-      if((frame.cob_id == RPDO[i].cob_id) && RPDO[i].valid){
-        Canopen_rxPDO(frame.data, i+1);
-        break;
+      for(i = 0; i < NrOfRXPDO; i++){
+        if((frame.cob_id == RPDO[i].cob_id) && RPDO[i].valid){
+          Canopen_rxPDO(frame.data, i+1);
+          break;
+        }
       }
-    }
 #endif
+      break;
     }
   }
   

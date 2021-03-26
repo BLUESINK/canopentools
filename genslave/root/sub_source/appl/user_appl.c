@@ -31,3 +31,19 @@ uint32_t Canopen_Application_AfterGetData(uint16_t Index, uint8_t subIndex){
 
   return 0; 
 }
+
+/* USER CODE BEGIN 4 */
+{{ user['4'] }}
+/* USER CODE END 4 */
+
+// Call when NMT State changed requested
+// You can call Canopen_ChangeState() functions to change NMT state
+void Canopen_Application_ChangeState(CANOPEN_STATE curr_state, CANOPEN_STATE req_state){
+  /* USER CODE BEGIN 5 */
+{{ user['5'] }}
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN 6 */
+{{ user['6'] }}
+/* USER CODE END 6 */

@@ -1,28 +1,31 @@
-#include "nmt.h"
 #include "canopen_global.h"
 
-uint8_t canopen_state;
+#include "nmt.h"
+#include "user_appl.h"
 
 void Canopen_NMT(uint8_t* data){
 
   if(data[1] != 0x00 && data[1] != _canopen.node_id) return;
   
-  canopen_state = data[0];
-  
   switch(data[0]){
   case 0x01: // Switch to "Operational"
+    Canopen_Application_ChangeState(_canopen.state, OPERATIONAL_STATE);
     break;
     
   case 0x02: // Switch to "Stop"
+    Canopen_Application_ChangeState(_canopen.state, STOPPPED_STATE);
     break;
     
   case 0x80: // Switch to "Pre-Operational"
+    Canopen_Application_ChangeState(_canopen.state, PRE_OPERATIONAL_STATE);
     break;
     
   case 0x81: // Reset Node
+    Canopen_Application_ChangeState(_canopen.state, RESET_APPLICATION_STATE);
     break;
     
   case 0x82: // Reset Communication
+    Canopen_Application_ChangeState(_canopen.state, RESET_COMMUNICATION_STATE);
     break;
   }
 }
