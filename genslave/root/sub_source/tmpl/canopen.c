@@ -34,8 +34,9 @@ void Canopen_ChangeState(CANOPEN_STATE state){
   }
 }
 
-void Canopen_Init(uint8_t canID){
+void Canopen_Init(uint8_t canID, uint32_t ctime){
   _canopen.node_id = canID;
+  _canopen.cycle_time = ctime;
   _canopen.state = INITIALISING_STATE;
 
   Canopen_FIFO_Init();
@@ -65,13 +66,30 @@ void Canopen_Loop(){
   CAN_FRAME frame;
   uint8_t i;
 
+#if HEARTBEAT
+  // Heartbeat Producer
+  static uint32_t heartbeat_counter = 0;
+  static CAN_FRAME heartbeat_frame;
+
+  if(OD_0x1017_00 != 0){
+    heartbeat_counter += _canopen.cycle_time;
+    if(heartbeat_counter >= OD_0x1017_00 * 1000){
+      heartbeat_counter = 0;
+      heartbeat_frame.cob_id = 0x700 | _canopen.node_id;
+      heartbeat_frame.len = 1;
+      heartbeat_frame.data[0] = _canopen.state < 4 ? 0 : _canopen.state;
+      Canopen_PutTxFIFO(&heartbeat_frame);
+    }
+  }
+#endif
+
   while(Canopen_GetRxFIFO(&frame)){
     switch(frame.cob_id >> 7){
     case 0x0C: // RX-SDO
       Canopen_rxSDO(frame.data);
       break;
       
-    case 0x0E: // Heartbeat
+    case 0x0E: // Heartbeat Consumer
       break;
 
     case 0x00: // NMT

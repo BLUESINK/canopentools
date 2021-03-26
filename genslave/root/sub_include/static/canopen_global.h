@@ -14,16 +14,17 @@ typedef struct{
 }CAN_FRAME;
 
 typedef enum{
-  INITIALISING_STATE,
-  RESET_APPLICATION_STATE,
-  RESET_COMMUNICATION_STATE,
-  PRE_OPERATIONAL_STATE,
-  OPERATIONAL_STATE,
-  STOPPPED_STATE
+  INITIALISING_STATE = 0,
+  RESET_APPLICATION_STATE = 1,
+  RESET_COMMUNICATION_STATE = 2,
+  PRE_OPERATIONAL_STATE = 127,
+  OPERATIONAL_STATE = 5,
+  STOPPPED_STATE = 4
 }CANOPEN_STATE;
 
 typedef struct{
   uint8_t               node_id;
+  uint32_t              cycle_time; // [us]
   CAN_FRAME             res;
   CANOPEN_STATE         state;
   OD_INTERFACE          od_res;

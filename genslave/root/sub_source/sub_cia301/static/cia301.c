@@ -171,5 +171,12 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
   }
 #endif
 
+#if HEARTBEAT
+  if(Index == 0x1017 && subIndex == 0x00){
+    OD_0x1017_00 = OD_0x1017_00_buf;
+    *go_next = 0;
+  }
+#endif
+
   return 0;
 }
