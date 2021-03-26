@@ -5,6 +5,7 @@ import os
 import datetime
 import json
 import argparse
+import git
 
 def generate(eds_filepath, output_filepath, show):
 
@@ -21,7 +22,9 @@ def generate(eds_filepath, output_filepath, show):
 
 	# Create dict
 	data = rootItem.makeDict()
-	data['version'] = "v0.1.0"
+
+	repo = git.Repo(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+	data['version'] = '0x' + repo.head.object.hexsha[:8].upper()
 
 	f.write(json.dumps(data))
 	f.close()
