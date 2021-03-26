@@ -15,6 +15,7 @@ void Canopen_Init(uint8_t canID){
   _canopen.node_id = canID;
   _canopen.state = INITIALISING_STATE;
 
+  Canopen_FIFO_Init();
   OD_INIT(canID);
 
   // Set RPDO Default Transtype
@@ -36,48 +37,54 @@ void Canopen_Init(uint8_t canID){
   _canopen.state = PRE_OPERATIONAL_STATE;
 }
 
-void Canopen_Loop(uint8_t cmd, uint8_t* data){
+void Canopen_Loop(){
 
-  Canopen_FIFO_Loop();
-  
-  switch(cmd){
-  case rxPDO1:
-    Canopen_rxPDO(data, 1);
-    break;
+  CAN_FRAME frame;
 
-  case rxPDO2:
-    Canopen_rxPDO(data, 2);
-    break;
+  while(Canopen_GetRxFIFO(&frame)){
+    switch(frame.cob_id >> 7){
+    case rxPDO1:
+      Canopen_rxPDO(frame.data, 1);
+      break;
 
-  case rxPDO3:
-    Canopen_rxPDO(data, 3);
-    break;
+    case rxPDO2:
+      Canopen_rxPDO(frame.data, 2);
+      break;
 
-  case rxPDO4:
-    Canopen_rxPDO(data, 4);
-    break;
+    case rxPDO3:
+      Canopen_rxPDO(frame.data, 3);
+      break;
 
-  case rxSDO:
-    Canopen_rxSDO(data);
-    break;
-    
-  case HTBT:
-    break;
+    case rxPDO4:
+      Canopen_rxPDO(frame.data, 4);
+      break;
 
-  case NMT:
-    Canopen_NMT(data);
-    break;
-    
-  case SYNC:
-    Canopen_SYNC();
-    break;
-    
-  case TIME:
-    break;
+    case rxSDO:
+      Canopen_rxSDO(frame.data);
+      break;
+      
+    case HTBT:
+      break;
+
+    case NMT:
+      Canopen_NMT(frame.data);
+      break;
+      
+    case SYNC:
+      Canopen_SYNC();
+      break;
+      
+    case TIME:
+      break;
+    }
   }
   
 }
 
 bool Canopen_GetFrame(CAN_FRAME* elem){
   return Canopen_GetTxFIFO(elem);
+}
+
+bool Canopen_PutFrame(CAN_FRAME* elem){
+  return Canopen_PutRxFIFO(elem);
 }

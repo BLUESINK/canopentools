@@ -5,8 +5,10 @@
 
 #include "canopen_global.h"
 
-extern void Canopen_FIFO_Loop();
+extern void Canopen_FIFO_Init();
 extern bool Canopen_PutTxFIFO(CAN_FRAME* elem);
 extern bool Canopen_GetTxFIFO(CAN_FRAME* elem);
+extern bool Canopen_PutRxFIFO(CAN_FRAME* elem);
+extern bool Canopen_GetRxFIFO(CAN_FRAME* elem);
 
 #endif

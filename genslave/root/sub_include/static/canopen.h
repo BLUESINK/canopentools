@@ -13,7 +13,8 @@
 // User Install Functions
 /**********************************************************************/
 extern void Canopen_Init(uint8_t canID);
-extern void Canopen_Loop(uint8_t cmd, uint8_t* data);
+extern void Canopen_Loop();
 extern bool Canopen_GetFrame(CAN_FRAME* elem);
+extern bool Canopen_PutFrame(CAN_FRAME* elem);
 
 #endif
