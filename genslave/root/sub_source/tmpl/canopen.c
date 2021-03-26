@@ -2,6 +2,7 @@
 #include "canopen.h"
 #include "canopen_config.h"
 
+#include "OD_access.h"
 #include "co_fifo.h"
 #include "nmt.h"
 #include "pdo.h"
