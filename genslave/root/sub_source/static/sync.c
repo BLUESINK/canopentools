@@ -1,3 +1,5 @@
+#include "canopen_config.h"
+
 #include "sync.h"
 #include "pdo.h"
 
