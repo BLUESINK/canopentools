@@ -4,6 +4,8 @@
 
 #include "OD.h"
 
+#include "canopen_config.h"
+
 static uint32_t abortCode = 0;
 
 uint32_t Canopen_ODstate_to_AbortCode(OD_STATE odState){

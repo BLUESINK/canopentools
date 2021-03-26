@@ -1,4 +1,5 @@
 #include "co_fifo.h"
+#include "canopen_config.h"
 
 typedef struct{
   uint8_t head;
@@ -28,8 +29,8 @@ bool queue_write(queue_t *queue, CAN_FRAME* elem){
 }
 
 
-queue_t tx_fifo;
-queue_t rx_fifo;
+static queue_t tx_fifo;
+static queue_t rx_fifo;
 
 void Canopen_FIFO_Init(){
   tx_fifo.head = 0;

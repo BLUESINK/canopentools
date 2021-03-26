@@ -1,9 +1,9 @@
 #ifndef __CANOPEN_PDO_H__
 #define __CANOPEN_ODO_H__
 
-#include "canopen_global.h"
+#include "stdint.h"
 
-typedef struct CANOPEN_PDO{
+typedef struct{
   uint8_t PDO_Buffer[8];
   uint8_t PDO_SYNC_Cnt;
   uint8_t PDO_TransType;

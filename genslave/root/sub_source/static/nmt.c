@@ -1,4 +1,5 @@
 #include "nmt.h"
+#include "canopen_global.h"
 
 uint8_t canopen_state;
 

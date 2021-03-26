@@ -1,8 +1,6 @@
 #ifndef __CANOPEN_FIFO_H__
 #define __CANOPEN_FIFO_H__
 
-#define CO_FIFO_NUM   10
-
 #include "canopen_global.h"
 
 extern void Canopen_FIFO_Init();

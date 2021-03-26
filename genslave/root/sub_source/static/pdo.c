@@ -3,6 +3,8 @@
 #include "co_fifo.h"
 #include "pdo_appl.h"
 
+#include "canopen_config.h"
+
 #if NrOfRXPDO > 0
 CANOPEN_PDO RPDO[NrOfRXPDO];
 #endif

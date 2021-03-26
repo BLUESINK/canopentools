@@ -3,12 +3,6 @@
 
 #include "canopen_global.h"
 
-#include "nmt.h"
-#include "sdo.h"
-#include "pdo.h"
-#include "sync.h"
-#include "co_fifo.h"
-
 /**********************************************************************/
 // User Install Functions
 /**********************************************************************/

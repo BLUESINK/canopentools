@@ -1,7 +1,12 @@
 {%- set INFO = data['child']['INFO']['child'] -%}
 #include "canopen.h"
-#include "OD.h"
-#include "OD_access.h"
+#include "canopen_config.h"
+
+#include "co_fifo.h"
+#include "nmt.h"
+#include "pdo.h"
+#include "sdo.h"
+#include "sync.h"
 
 CANOPEN _canopen;
 #if NrOfRXPDO > 0
