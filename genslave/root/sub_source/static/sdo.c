@@ -1,10 +1,11 @@
-#include "sdo.h"
-#include "sdo_appl.h"
-#include "co_fifo.h"
+#include "canopen_config.h"
 
+#include "sdo.h"
+#include "co_fifo.h"
 #include "OD.h"
 
-#include "canopen_config.h"
+#include "user_appl.h"
+#include "cia301.h"
 
 static uint32_t abortCode = 0;
 
@@ -36,6 +37,25 @@ void Canopen_SDOabort(CAN_FRAME* res, uint16_t Index, uint8_t subIndex){
 
   memcpy(_canopen.res.data + 4, &abortCode, sizeof(uint32_t));  
 }
+
+/******************************************************************************/
+// SDO Application Functions
+/******************************************************************************/
+uint32_t Canopen_SDOapplication_BeforeSendData(uint16_t Index, uint8_t subIndex){
+  return Canopen_Application_BeforeSendData(Index, subIndex);
+}
+
+uint32_t Canopen_SDOapplication_AfterGetData(uint16_t Index, uint8_t subIndex){
+
+  uint32_t abortCode = 0;
+  uint8_t go_next;
+
+  // Pre-check device profiles
+  abortCode = cia301_proc(Index, subIndex, &go_next); if(abortCode != 0 || go_next == 0) return abortCode;
+
+  return Canopen_Application_AfterGetData(Index, subIndex);
+}
+
 /******************************************************************************/
 // SDO Download Functions
 /******************************************************************************/

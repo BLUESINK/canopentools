@@ -1,7 +1,7 @@
 #include "pdo.h"
 
 #include "co_fifo.h"
-#include "pdo_appl.h"
+#include "user_appl.h"
 
 #include "canopen_config.h"
 
@@ -11,6 +11,7 @@ CANOPEN_PDO RPDO[NrOfRXPDO];
 #if NrOfTXPDO > 0
 CANOPEN_PDO TPDO[NrOfTXPDO];
 #endif
+
 void Canopen_txPDO_Proc(uint8_t channel){
 
   uint8_t i, j;
@@ -55,7 +56,7 @@ void Canopen_txPDO_Proc(uint8_t channel){
     pdoMappingByteLength = (pdoMappingBitLength - 1) / 8 + 1;
     
     // User Application
-    Canopen_PDOapplication_BeforeSendData(pdoMappingIndex, pdoMappingSubIndex);
+    Canopen_Application_BeforeSendData(pdoMappingIndex, pdoMappingSubIndex);
     
     _canopen.od_res.Index = pdoMappingIndex;
     _canopen.od_res.SubIndex = pdoMappingSubIndex;
@@ -198,7 +199,7 @@ void Canopne_rxPDO_Proc(uint8_t* data, uint8_t channel){
     pdoMappingBitOffset += pdoMappingBitLength;
     
     // End of RPDO Process
-    Canopen_PDOapplication_AfterGetData(pdoMappingIndex, pdoMappingSubIndex);
+    Canopen_Application_AfterGetData(pdoMappingIndex, pdoMappingSubIndex);
   }
   
 }
