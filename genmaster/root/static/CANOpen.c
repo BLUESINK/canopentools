@@ -139,8 +139,10 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       if(rxBuffer[i].data[2] != txData[2]) continue;
       if(rxBuffer[i].data[3] != txData[3]) continue;
       
-      *len = 4 - ((rxBuffer[i].data[0] & 0x0C) >> 2);
-      memcpy(data, rxBuffer[i].data + 4, *len);
+      if(len != NULL && data != NULL){
+        *len = 4 - ((rxBuffer[i].data[0] & 0x0C) >> 2);
+        memcpy(data, rxBuffer[i].data + 4, *len);        
+      }
       
       rxBuffer[i].valid = 0;
       return CO_OK;
