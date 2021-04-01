@@ -20,7 +20,7 @@ void Canopen_SYNC(){
 
   // RPDO Process
   for(i = 0; i < NrOfRXPDO; i++){
-    if(!RPDO[i].valid && RPDO[i].new_data == 1){
+    if(RPDO[i].valid && RPDO[i].new_data == 1){
       RPDO[i].PDO_SYNC_Cnt ++;
       if(RPDO[i].PDO_TransType < 0xF1){ // Synchronous
         if(RPDO[i].PDO_SYNC_Cnt >= RPDO[i].PDO_TransType){
@@ -39,7 +39,7 @@ void Canopen_SYNC(){
 
   // TPDO Process
   for(i = 0; i < NrOfTXPDO; i++){
-    if(!TPDO[i].valid){
+    if(TPDO[i].valid){
       TPDO[i].PDO_SYNC_Cnt ++;
       if(TPDO[i].PDO_TransType < 0xF1){ // Synchronous
         if(TPDO[i].PDO_SYNC_Cnt >= TPDO[i].PDO_TransType){
