@@ -6,8 +6,8 @@
 /**********************************************************************/
 // User Install Functions
 /**********************************************************************/
-extern void Canopen_Init(uint8_t canID, uint32_t ctime);
-extern void Canopen_Loop();
+extern void Canopen_Init(uint8_t canID);
+extern void Canopen_Loop(uint32_t ctime);
 
 extern CANOPEN_STATE Canopen_GetState();
 extern void Canopen_ChangeState(CANOPEN_STATE state);

@@ -34,9 +34,8 @@ void Canopen_ChangeState(CANOPEN_STATE state){
   }
 }
 
-void Canopen_Init(uint8_t canID, uint32_t ctime){
+void Canopen_Init(uint8_t canID){
   _canopen.node_id = canID;
-  _canopen.cycle_time = ctime;
   _canopen.state = INITIALISING_STATE;
 
   Canopen_FIFO_Init();
@@ -61,7 +60,7 @@ void Canopen_Init(uint8_t canID, uint32_t ctime){
   {%- endfor %}
 }
 
-void Canopen_Loop(){
+void Canopen_Loop(uint32_t ctime){
 
   CAN_FRAME frame;
   uint8_t i;
@@ -72,7 +71,7 @@ void Canopen_Loop(){
   static CAN_FRAME heartbeat_frame;
 
   if(OD_0x1017_00 != 0){
-    heartbeat_counter += _canopen.cycle_time;
+    heartbeat_counter += ctime;
     if(heartbeat_counter >= OD_0x1017_00 * 1000){
       heartbeat_counter = 0;
       heartbeat_frame.cob_id = 0x700 | _canopen.node_id;

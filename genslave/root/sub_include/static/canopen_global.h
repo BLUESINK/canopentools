@@ -24,7 +24,6 @@ typedef enum{
 
 typedef struct{
   uint8_t               node_id;
-  uint32_t              cycle_time; // [us]
   CAN_FRAME             res;
   CANOPEN_STATE         state;
   OD_INTERFACE          od_res;
