@@ -37,11 +37,8 @@ uint32_t Canopen_Application_AfterGetData(uint16_t Index, uint8_t subIndex){
 {{ user['4'] }}
 /* USER CODE END 4 */
 
-// Call when NMT State changed requested
-// Only RESET_APPLICATION_STATE, RESET_COMMUNICATION_STATE requests are requested with this function.
-// Other state transitions are handled automatically.
-// You can call Canopen_ChangeState() functions to change NMT state
-void Canopen_Application_ChangeState(CANOPEN_STATE curr_state, CANOPEN_STATE req_state){
+// Call when master wants to reset application
+void Canopen_Application_ResetAppl(){
   /* USER CODE BEGIN 5 */
 {{ user['5'] }}
   /* USER CODE END 5 */
@@ -50,3 +47,10 @@ void Canopen_Application_ChangeState(CANOPEN_STATE curr_state, CANOPEN_STATE req
 /* USER CODE BEGIN 6 */
 {{ user['6'] }}
 /* USER CODE END 6 */
+
+// Call when master wants to rest communication
+void Canopen_Application_ResetComm(){
+  /* USER CODE BEGIN 7 */
+{{ user['7'] }}
+  /* USER CODE END 7 */
+}

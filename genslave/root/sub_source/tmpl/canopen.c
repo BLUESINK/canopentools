@@ -8,6 +8,7 @@
 #include "pdo.h"
 #include "sdo.h"
 #include "sync.h"
+#include "user_appl.h"
 
 CANOPEN _canopen;
 #if NrOfRXPDO > 0
@@ -17,29 +18,10 @@ extern CANOPEN_PDO RPDO[NrOfRXPDO];
 extern CANOPEN_PDO TPDO[NrOfTXPDO];
 #endif
 
-CANOPEN_STATE Canopen_GetState(){
-  return _canopen.state;
-}
-
-void Canopen_ChangeState(CANOPEN_STATE state){
-  _canopen.state = state;
-
-  // NMT slave produce boot-up protocol after entered pre-op.
-  if(state == PRE_OPERATIONAL_STATE){
-    CAN_FRAME frame;
-    frame.cob_id = 0x700 | _canopen.node_id;
-    frame.len = 1;
-    frame.data[0] = 0x00;
-    Canopen_PutTxFIFO(&frame);
-  }
-}
-
-void Canopen_Init(uint8_t canID){
-  _canopen.node_id = canID;
-  _canopen.state = INITIALISING_STATE;
+void Canopen_Init(){
 
   Canopen_FIFO_Init();
-  OD_INIT(canID);
+  OD_INIT(_canopen.node_id);
 
   // Set RPDO Default Transtype
   {%- set NrOfRXPDO = INFO.DeviceInfo['data'].NrOfRXPDO | int %}
@@ -58,6 +40,54 @@ void Canopen_Init(uint8_t canID){
   TPDO[{{ n }}].valid = OD_0x{{ '%04X' % index }}_01 & 0x80000000 ? 0 : 1;
   TPDO[{{ n }}].cob_id = OD_0x{{ '%04X' % index }}_01 & 0x000007FF; 
   {%- endfor %}
+}
+
+void Canopen_ChangeState(CANOPEN_STATE state){
+
+  switch(state){
+    case RESET_APPLICATION_STATE:
+      Canopen_Application_ResetAppl();
+      _canopen.state = state;
+      Canopen_ChangeState(RESET_COMMUNICATION_STATE);
+      break;
+
+    case RESET_COMMUNICATION_STATE:
+      Canopen_Init();
+      Canopen_Application_ResetComm();
+      _canopen.state = state;
+      Canopen_ChangeState(PRE_OPERATIONAL_STATE);
+      break;
+
+    case PRE_OPERATIONAL_STATE:
+      // NMT slave produce boot-up protocol after entered pre-op.
+      _canopen.state = state;
+      CAN_FRAME frame;
+      frame.cob_id = 0x700 | _canopen.node_id;
+      frame.len = 1;
+      frame.data[0] = 0x00;
+      Canopen_PutTxFIFO(&frame);
+      break;
+
+    case OPERATIONAL_STATE:
+      if(_canopen.state == PRE_OPERATIONAL_STATE
+      || _canopen.state == STOPPPED_STATE) _canopen.state = state;
+      break;
+
+    case STOPPPED_STATE:
+      // TODO
+      break;
+
+    default:
+      break;
+  }
+
+}
+
+void Canopen_Start(uint8_t canID){
+  _canopen.state = INITIALISING_STATE;
+  _canopen.node_id = canID;
+
+  Canopen_ChangeState(RESET_APPLICATION_STATE);
 }
 
 void Canopen_Loop(uint32_t ctime){

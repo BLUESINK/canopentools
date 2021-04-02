@@ -31,22 +31,18 @@ OD_SUBINDEX* OD_GET_SUBINDEX(uint16_t index, uint8_t subindex){
 }
 
 OD_STATE OD_INIT(uint8_t NODEID){
-  static uint8_t init = 0;
 
-  if(!init){
-    init = 1;
-    {%- for _,index in OD.items() %}
-    {%- for _,subindex in index['child'].items() %}
-    {%- if subindex.data['DefaultValue'] %}
-    {%- if subindex.data['DataTypeStr'][2] == 'Basic' %}
-    OD_0x{{ index.name }}_{{ subindex.name }} = {{ subindex.data['DefaultValue'] }};
-    {%- elif subindex.data['DataTypeStr'][2] == 'Extended' %}
-    memcpy(OD_0x{{ index.name }}_{{ subindex.name }}, {{ subindex.data['DefaultValue'] }}, {{ (subindex.data['DataTypeStr'][1]/8)|int }});
-    {%- endif %}
-    {%- endif %}
-    {%- endfor %}
-    {% endfor %}
-  }
+  {%- for _,index in OD.items() %}
+  {%- for _,subindex in index['child'].items() %}
+  {%- if subindex.data['DefaultValue'] %}
+  {%- if subindex.data['DataTypeStr'][2] == 'Basic' %}
+  OD_0x{{ index.name }}_{{ subindex.name }} = {{ subindex.data['DefaultValue'] }};
+  {%- elif subindex.data['DataTypeStr'][2] == 'Extended' %}
+  memcpy(OD_0x{{ index.name }}_{{ subindex.name }}, {{ subindex.data['DefaultValue'] }}, {{ (subindex.data['DataTypeStr'][1]/8)|int }});
+  {%- endif %}
+  {%- endif %}
+  {%- endfor %}
+  {% endfor %}
 
   return OD_OK;
 }
