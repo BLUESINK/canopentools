@@ -38,6 +38,7 @@ extern CO_Status CANOpen_sendSync();
 
 extern CO_Status CANOpen_NMT(CO_NMT state, uint8_t id);
 
+extern CO_Status CANOpen_writeOD(uint8_t nodeId, uint16_t Index, uint8_t subIndex, uint8_t* data, uint8_t len, uint16_t timeout);
 extern CO_Status CANOpen_writeOD_float(uint8_t nodeId, uint16_t Index, uint8_t subIndex, float data, uint16_t timeout);
 extern CO_Status CANOpen_writeOD_uint32(uint8_t nodeId, uint16_t Index, uint8_t subIndex, uint32_t data, uint16_t timeout);
 extern CO_Status CANOpen_writeOD_int32(uint8_t nodeId, uint16_t Index, uint8_t subIndex, int32_t data, uint16_t timeout);
