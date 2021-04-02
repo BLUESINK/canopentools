@@ -83,7 +83,7 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
       mapped_data32 = (uint32_t*)subInstance->data;
       if((mapped_data32[0] ^ mapped_data32[1]) == 0x80000000){  // Only Valid bit change
         mapped_data32[0] = mapped_data32[1];
-        RPDO[Index - 0x1400].valid = mapped_data32[0] & 0x80000000 ? 1 : 0;
+        RPDO[Index - 0x1400].valid = mapped_data32[0] & 0x80000000 ? 0 : 1;
         *go_next = 0;
         return 0;
       }else return 0x06090030;
@@ -103,7 +103,7 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
     }
 
   }else if(Index >= 0x1600 && Index <= 0x17FF){ // [[ 0x1600 - 0x17FF : Check RPDO mapping parameter ]]
-    if(!RPDO[Index - 0x1600].valid) return 0x06010000; 
+    if(RPDO[Index - 0x1600].valid) return 0x06010000; 
 
     switch(subIndex){
 
@@ -132,7 +132,7 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
         check_bit = mapped_data32[0] ^ mapped_data32[1];
         if(check_bit == 0x80000000){  // Only Valid bit change
           mapped_data32[0] = mapped_data32[1];
-          TPDO[Index - 0x1800].valid = mapped_data32[0] & 0x80000000 ? 1 : 0;
+          TPDO[Index - 0x1800].valid = mapped_data32[0] & 0x80000000 ? 0 : 1;
           *go_next = 0;
           return 0;
         }else if(check_bit == 0){ // Not change
@@ -154,7 +154,7 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
 
     }
   }else if(Index >= 0x1A00 && Index <= 0x1BFF){ // [[ 0x1A00 - 0x1BFF : Check TPDO mapping parameter ]]
-    if(!TPDO[Index - 0x1A00].valid) return 0x06010000; 
+    if(TPDO[Index - 0x1A00].valid) return 0x06010000; 
     switch(subIndex){
 
       case 0x00: // Number of mapped application objects in PDO
