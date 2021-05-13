@@ -168,7 +168,7 @@ CO_Status CANOpen_sendPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
   }
   
   uint64_t tmp64 = 0;
-  uint8_t i;
+  uint16_t i;
   uint8_t bytelen;
   
   uint8_t total_bit = 0;
@@ -208,7 +208,7 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
   
   uint16_t cobID_target = nodeId;
   uint64_t tmp64 = 0;
-  uint8_t i, j;
+  uint16_t i, j;
   uint8_t bytelen;
   
   switch(channel){
