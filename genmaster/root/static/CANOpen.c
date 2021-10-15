@@ -3,9 +3,13 @@
 
 #include <string.h>
 
-static CO_LIST rxBuffer[CO_BUFLEN];
-static CO_LIST empty_head;
-static CO_LIST filled_head;
+static CO_LIST general_buff[CO_BUFLEN];
+static CO_LIST general_empty_head;
+static CO_LIST general_filled_head;
+
+static CO_LIST tpdo_buff[CO_BUFLEN];
+static CO_LIST tpdo_empty_head;
+static CO_LIST tpdo_filled_head;
 
 static uint16_t cobID;
 static uint8_t txData[8];
@@ -86,9 +90,9 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
   tx_timeout = timeout;
   while(tx_timeout != 0){
     // Find Valid response from filled list
-    CO_LIST *filled_entry = &filled_head;
+    CO_LIST *filled_entry = &general_filled_head;
 
-    while(filled_entry->next != &filled_head){
+    while(filled_entry->next != &general_filled_head && filled_entry->next != &general_empty_head){
       filled_entry = filled_entry->next;
       if(filled_entry->cobID != (nodeId | 0x0580)) continue;
       if(filled_entry->data[0] != 0x60) continue;
@@ -98,7 +102,7 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
 
       CANOpen_mutexLock();
       CANOpen_list_del(filled_entry);
-      CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_list_add_prev(filled_entry, &general_empty_head);
       CANOpen_mutexUnlock();
       return CO_OK;
     }
@@ -130,9 +134,9 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
   tx_timeout = timeout;
   while(tx_timeout != 0){
     // Find Valid response from filled list
-    CO_LIST *filled_entry = &filled_head;
+    CO_LIST *filled_entry = &general_filled_head;
 
-    while(filled_entry->next != &filled_head){
+    while(filled_entry->next != &general_filled_head && filled_entry->next != &general_empty_head){
       filled_entry = filled_entry->next;
       if(filled_entry->cobID != (nodeId | 0x0580)) continue;
       if((filled_entry->data[0] & 0x43) != 0x43) continue;
@@ -148,7 +152,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       }
       
       CANOpen_list_del(filled_entry);
-      CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_list_add_prev(filled_entry, &general_empty_head);
       CANOpen_mutexUnlock();
       return CO_OK;
     }
@@ -226,24 +230,24 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
   tx_timeout = timeout;
   while(tx_timeout != 0){
     // Find Valid frame filled list
-    CO_LIST *filled_entry = &filled_head;
+    CO_LIST *tpdo_entry = &tpdo_filled_head;
 
-    while(filled_entry->next != &filled_head){
+    while(tpdo_entry->next != &tpdo_filled_head && tpdo_entry->next != &tpdo_empty_head){
 
-      filled_entry = filled_entry->next;
-      if(filled_entry->cobID != cobID_target) continue;
+      tpdo_entry = tpdo_entry->next;
+      if(tpdo_entry->cobID != cobID_target) continue;
 
       CANOpen_mutexLock();    
 
-      memcpy(&tmp64, filled_entry->data, 8);
+      memcpy(&tmp64, tpdo_entry->data, 8);
       for(j = 0; j < pdo_struct->mappinglen; j++){
         bytelen = (pdo_struct->bitlen[j] - 1) / 8 + 1;
         memcpy(pdo_struct->data[j], &tmp64, bytelen);
         tmp64 = tmp64 >> pdo_struct->bitlen[j];
       }
 
-      CANOpen_list_del(filled_entry);
-      CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_list_del(tpdo_entry);
+      CANOpen_list_add_prev(tpdo_entry, &tpdo_empty_head);
       CANOpen_mutexUnlock();
       return CO_OK;
     }
@@ -321,35 +325,69 @@ void CANOpen_mappingPDO_int8(CO_PDOStruct* pdo_struct, int8_t* data){
 
 
 void CANOpen_init(){
-  CANOpen_list_init(&filled_head);
-  CANOpen_list_init(&empty_head);
+  CANOpen_list_init(&general_filled_head);
+  CANOpen_list_init(&general_empty_head);
+
+  CANOpen_list_init(&tpdo_filled_head);
+  CANOpen_list_init(&tpdo_empty_head);
 
   int i;
   for(i = 0; i < CO_BUFLEN; i++){
-    CANOpen_list_add_prev(&rxBuffer[i], &empty_head);
+    CANOpen_list_add_prev(&general_buff[i], &general_empty_head);
+    CANOpen_list_add_prev(&tpdo_buff[i], &tpdo_empty_head);
   }
 }
 
 void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
 
+  uint16_t fcode = (cobID & 0x780) >> 7;
+
   CANOpen_mutexLock();
+  
+  if(fcode > 2 && fcode < 11 && (fcode % 2) == 1){ // [[ TPDO frame ]]
 
-  // Serach from empty list
-  CO_LIST *empty_entry = empty_head.next;
-  if(empty_entry == &empty_head){
-    // If no empty entry delete oldest filled entry
-    empty_entry = filled_head.prev;
-    if(empty_entry == &filled_head){
-      CANOpen_mutexUnlock();
-      return;
+    // Search from empty list
+    CO_LIST *empty_entry = tpdo_empty_head.next;
+    if(empty_entry == &tpdo_empty_head){
+      // If no empty entry delete oldest filled entry
+      empty_entry = tpdo_filled_head.prev;
     }
+
+    CANOpen_list_del(empty_entry);
+
+    // Copy data
+    empty_entry->cobID = cobID;
+    memcpy(empty_entry->data, data, 8);
+
+    // Save only one TPDO per some channel of ID
+    CO_LIST *tpdo_entry = &tpdo_filled_head;
+    while(tpdo_entry->next != &tpdo_filled_head){
+      tpdo_entry = tpdo_entry->next;
+      if(tpdo_entry->cobID == cobID){
+        CANOpen_list_del(tpdo_entry);
+        CANOpen_list_add_prev(tpdo_entry, &tpdo_empty_head);
+        break;
+      }
+    }
+    CANOpen_list_add_next(empty_entry, &tpdo_filled_head); 
+
+  }else{ // [[ Normal frame ]]
+
+    // Search from empty list
+    CO_LIST *empty_entry = general_empty_head.next;
+    if(empty_entry == &general_empty_head){
+      // If no empty entry delete oldest filled entry
+      empty_entry = general_filled_head.prev;
+    }
+
+    CANOpen_list_del(empty_entry);
+
+    // Copy data
+    empty_entry->cobID = cobID;
+    memcpy(empty_entry->data, data, 8);
+
+    CANOpen_list_add_next(empty_entry, &general_filled_head);    
   }
-
-  empty_entry->cobID = cobID;
-  memcpy(empty_entry->data, data, 8);
-
-  CANOpen_list_del(empty_entry);
-  CANOpen_list_add_next(empty_entry, &filled_head);
 
   CANOpen_mutexUnlock();
   
