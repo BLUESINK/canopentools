@@ -11,6 +11,8 @@ extern "C"
 #define CO_BUFLEN            40
 
 extern void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len);
+extern int CANOpen_mutexLock();
+extern int CANOpen_mutexUnlock();
 
 #ifdef __cplusplus
 }

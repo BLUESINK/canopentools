@@ -95,9 +95,11 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
       if(filled_entry->data[1] != txData[1]) continue;
       if(filled_entry->data[2] != txData[2]) continue;
       if(filled_entry->data[3] != txData[3]) continue;
-      
+
+      CANOpen_mutexLock();
       CANOpen_list_del(filled_entry);
       CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_mutexUnlock();
       return CO_OK;
     }
   }
@@ -137,7 +139,9 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       if(filled_entry->data[1] != txData[1]) continue;
       if(filled_entry->data[2] != txData[2]) continue;
       if(filled_entry->data[3] != txData[3]) continue;
-      
+
+      CANOpen_mutexLock();
+
       if(len != NULL && data != NULL){
         *len = 4 - ((filled_entry->data[0] & 0x0C) >> 2);
         memcpy(data, filled_entry->data + 4, *len);        
@@ -145,6 +149,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       
       CANOpen_list_del(filled_entry);
       CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_mutexUnlock();
       return CO_OK;
     }
   }
@@ -224,9 +229,12 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
     CO_LIST *filled_entry = &filled_head;
 
     while(filled_entry->next != &filled_head){
+
       filled_entry = filled_entry->next;
       if(filled_entry->cobID != cobID_target) continue;
-      
+
+      CANOpen_mutexLock();    
+
       memcpy(&tmp64, filled_entry->data, 8);
       for(j = 0; j < pdo_struct->mappinglen; j++){
         bytelen = (pdo_struct->bitlen[j] - 1) / 8 + 1;
@@ -236,9 +244,11 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
 
       CANOpen_list_del(filled_entry);
       CANOpen_list_add_prev(filled_entry, &empty_head);
+      CANOpen_mutexUnlock();
       return CO_OK;
     }
   }
+
   timeout_cnt++;
   return CO_TIMEOUT;
 }
@@ -322,6 +332,8 @@ void CANOpen_init(){
 
 void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
 
+  CANOpen_mutexLock();
+
   // Serach from empty list
   CO_LIST *empty_entry = empty_head.next;
   if(empty_entry != &empty_head){
@@ -347,6 +359,8 @@ void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
     }
 
   }
+
+  CANOpen_mutexUnlock();
   
 }
 
