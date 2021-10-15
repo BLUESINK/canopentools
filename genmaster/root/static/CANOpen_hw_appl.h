@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-#define CO_BUFLEN            40
+#define CO_BUFLEN            20
 
 extern void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len);
 extern int CANOpen_mutexLock();
