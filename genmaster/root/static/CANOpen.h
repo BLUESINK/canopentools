@@ -64,6 +64,7 @@ extern CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* 
 /*****************************************************************************/
 // User Install Functions
 /*****************************************************************************/
+extern void CANOpen_init();
 extern void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data);
 extern void CANOpen_timerLoop();
 

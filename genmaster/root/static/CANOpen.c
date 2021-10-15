@@ -1,14 +1,11 @@
 #include "CANOpen.h"
+#include "CANOpen_list.h"
 
 #include <string.h>
 
-typedef struct CO_BUFFER{
-  uint16_t cobID;
-  uint8_t data[8];
-  uint8_t valid;
-  uint16_t timeout;
-}CO_BUFFER;
-static CO_BUFFER rxBuffer[CO_BUFLEN];
+static CO_LIST rxBuffer[CO_BUFLEN];
+static CO_LIST empty_head;
+static CO_LIST filled_head;
 
 static uint16_t cobID;
 static uint8_t txData[8];
@@ -67,7 +64,6 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
                    uint8_t len,
                    uint16_t timeout)
 {
-  uint16_t i;
   
   if(len > 4) len = 4; // Only support expedited transfer
   if(len == 0) return CO_OK;
@@ -89,16 +85,19 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
   
   tx_timeout = timeout;
   while(tx_timeout != 0){
-    // Find Valid response
-    for(i = 0; i < CO_BUFLEN; i++){
-      if(rxBuffer[i].valid == 0) continue;
-      if(rxBuffer[i].cobID != (nodeId | 0x0580)) continue;
-      if(rxBuffer[i].data[0] != 0x60) continue;
-      if(rxBuffer[i].data[1] != txData[1]) continue;
-      if(rxBuffer[i].data[2] != txData[2]) continue;
-      if(rxBuffer[i].data[3] != txData[3]) continue;
+    // Find Valid response from filled list
+    CO_LIST *filled_entry = &filled_head;
+
+    while(filled_entry->next != &filled_head){
+      filled_entry = filled_entry->next;
+      if(filled_entry->cobID != (nodeId | 0x0580)) continue;
+      if(filled_entry->data[0] != 0x60) continue;
+      if(filled_entry->data[1] != txData[1]) continue;
+      if(filled_entry->data[2] != txData[2]) continue;
+      if(filled_entry->data[3] != txData[3]) continue;
       
-      rxBuffer[i].valid = 0;
+      CANOpen_list_del(filled_entry);
+      CANOpen_list_add_prev(filled_entry, &empty_head);
       return CO_OK;
     }
   }
@@ -113,9 +112,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
                      uint8_t* len,
                      uint16_t timeout)
 {
-  
-  uint16_t i;
-  
+    
   // Create rxSDO frame
   cobID = (uint16_t)(nodeId & 0x7F);
   cobID |= 0x0600;
@@ -130,21 +127,24 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
   
   tx_timeout = timeout;
   while(tx_timeout != 0){
-    // Find Valid response
-    for(i = 0; i < CO_BUFLEN; i++){
-      if(rxBuffer[i].valid == 0) continue;
-      if(rxBuffer[i].cobID != (nodeId | 0x0580)) continue;
-      if((rxBuffer[i].data[0] & 0x43) != 0x43) continue;
-      if(rxBuffer[i].data[1] != txData[1]) continue;
-      if(rxBuffer[i].data[2] != txData[2]) continue;
-      if(rxBuffer[i].data[3] != txData[3]) continue;
+    // Find Valid response from filled list
+    CO_LIST *filled_entry = &filled_head;
+
+    while(filled_entry->next != &filled_head){
+      filled_entry = filled_entry->next;
+      if(filled_entry->cobID != (nodeId | 0x0580)) continue;
+      if((filled_entry->data[0] & 0x43) != 0x43) continue;
+      if(filled_entry->data[1] != txData[1]) continue;
+      if(filled_entry->data[2] != txData[2]) continue;
+      if(filled_entry->data[3] != txData[3]) continue;
       
       if(len != NULL && data != NULL){
-        *len = 4 - ((rxBuffer[i].data[0] & 0x0C) >> 2);
-        memcpy(data, rxBuffer[i].data + 4, *len);        
+        *len = 4 - ((filled_entry->data[0] & 0x0C) >> 2);
+        memcpy(data, filled_entry->data + 4, *len);        
       }
       
-      rxBuffer[i].valid = 0;
+      CANOpen_list_del(filled_entry);
+      CANOpen_list_add_prev(filled_entry, &empty_head);
       return CO_OK;
     }
   }
@@ -208,7 +208,7 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
   
   uint16_t cobID_target = nodeId;
   uint64_t tmp64 = 0;
-  uint16_t i, j;
+  uint16_t j;
   uint8_t bytelen;
   
   switch(channel){
@@ -220,18 +220,22 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
   
   tx_timeout = timeout;
   while(tx_timeout != 0){
-    // Find Valid frame
-    for(i = 0; i < CO_BUFLEN; i++){
-      if(rxBuffer[i].valid == 0) continue;
-      if(rxBuffer[i].cobID != cobID_target) continue;
+    // Find Valid frame filled list
+    CO_LIST *filled_entry = &filled_head;
+
+    while(filled_entry->next != &filled_head){
+      filled_entry = filled_entry->next;
+      if(filled_entry->cobID != cobID_target) continue;
       
-      memcpy(&tmp64, rxBuffer[i].data, 8);
+      memcpy(&tmp64, filled_entry->data, 8);
       for(j = 0; j < pdo_struct->mappinglen; j++){
         bytelen = (pdo_struct->bitlen[j] - 1) / 8 + 1;
         memcpy(pdo_struct->data[j], &tmp64, bytelen);
         tmp64 = tmp64 >> pdo_struct->bitlen[j];
       }
-      rxBuffer[i].valid = 0;
+
+      CANOpen_list_del(filled_entry);
+      CANOpen_list_add_prev(filled_entry, &empty_head);
       return CO_OK;
     }
   }
@@ -306,30 +310,48 @@ void CANOpen_mappingPDO_int8(CO_PDOStruct* pdo_struct, int8_t* data){
 }
 
 
+void CANOpen_init(){
+  CANOpen_list_init(&filled_head);
+  CANOpen_list_init(&empty_head);
+
+  int i;
+  for(i = 0; i < CO_BUFLEN; i++){
+    CANOpen_list_add_prev(&rxBuffer[i], &empty_head);
+  }
+}
+
 void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
 
-  uint16_t i;
-  for(i = 0; i < CO_BUFLEN; i++){
-    if(rxBuffer[i].valid == 0){
-      rxBuffer[i].timeout = CO_RX_TIMEOUT;
-      rxBuffer[i].cobID = cobID;
-      memcpy(rxBuffer[i].data, data, 8);
-      rxBuffer[i].valid = 1;
-      return;
+  // Serach from empty list
+  CO_LIST *empty_entry = empty_head.next;
+  if(empty_entry != &empty_head){
+
+    empty_entry->cobID = cobID;
+    memcpy(empty_entry->data, data, 8);
+
+    CANOpen_list_del(empty_entry);
+    CANOpen_list_add_next(empty_entry, &filled_head);
+
+  }else{
+
+    // If no empty entry delete oldest filled entry
+    CO_LIST *filled_entry = filled_head.prev;
+    if(filled_entry != &filled_head){
+
+      filled_entry->cobID = cobID;
+      memcpy(filled_entry->data, data, 8);
+
+      CANOpen_list_del(filled_entry);
+      CANOpen_list_add_next(filled_entry, &filled_head);
+
     }
+
   }
   
 }
 
 void CANOpen_timerLoop(){ // Should be call every 1ms
   
-  uint16_t i;
   if(tx_timeout != 0) tx_timeout --;
-  for(i = 0; i < CO_BUFLEN; i++){
-    if(rxBuffer[i].valid == 1){
-      if(rxBuffer[i].timeout != 0) rxBuffer[i].timeout --;
-      if(rxBuffer[i].timeout == 0) rxBuffer[i].valid = 0;
-    }
-  }
-  
+
 }
