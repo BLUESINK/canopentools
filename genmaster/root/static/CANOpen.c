@@ -336,29 +336,20 @@ void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
 
   // Serach from empty list
   CO_LIST *empty_entry = empty_head.next;
-  if(empty_entry != &empty_head){
-
-    empty_entry->cobID = cobID;
-    memcpy(empty_entry->data, data, 8);
-
-    CANOpen_list_del(empty_entry);
-    CANOpen_list_add_next(empty_entry, &filled_head);
-
-  }else{
-
+  if(empty_entry == &empty_head){
     // If no empty entry delete oldest filled entry
-    CO_LIST *filled_entry = filled_head.prev;
-    if(filled_entry != &filled_head){
-
-      filled_entry->cobID = cobID;
-      memcpy(filled_entry->data, data, 8);
-
-      CANOpen_list_del(filled_entry);
-      CANOpen_list_add_next(filled_entry, &filled_head);
-
+    empty_entry = filled_head.prev;
+    if(empty_entry == &filled_head){
+      CANOpen_mutexUnlock();
+      return;
     }
-
   }
+
+  empty_entry->cobID = cobID;
+  memcpy(empty_entry->data, data, 8);
+
+  CANOpen_list_del(empty_entry);
+  CANOpen_list_add_next(empty_entry, &filled_head);
 
   CANOpen_mutexUnlock();
   
