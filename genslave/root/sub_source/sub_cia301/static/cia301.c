@@ -160,10 +160,14 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
           TPDO[Index - 0x1800].PDO_TransType = mapped_data8[0];
           *go_next = 0;
           return 0;
-        }else{
-          // TODO : Asynchronous
+        }else if(mapped_data8[1] <= 0xFB){ // 0xF1 ~ 0xFB reserved
+          return 0x06090030;
+        }else if(mapped_data8[1] < 0xFE){
+          mapped_data8[0] = mapped_data8[1];
+          TPDO[Index - 0x1800].PDO_TransType = mapped_data8[0];
+          *go_next = 0;
           return 0;
-        }
+        }else return 0x06090030; // Event driven (Not implemented yet)
 
     }
   }else if(Index >= 0x1A00 && Index <= 0x1BFF){ // [[ 0x1A00 - 0x1BFF : Check TPDO mapping parameter ]]

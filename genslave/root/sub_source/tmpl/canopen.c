@@ -93,7 +93,6 @@ void Canopen_Start(uint8_t canID){
 void Canopen_Loop(uint32_t ctime){
 
   CAN_FRAME frame;
-  uint8_t i;
 
 #if HEARTBEAT
   // Heartbeat Producer
@@ -132,17 +131,42 @@ void Canopen_Loop(uint32_t ctime){
     case 0x02: // TIME
       break;
 
-    default:
-#if NrOfRXPDO > 0
+    default: // PDOs
       if(_canopen.state != OPERATIONAL_STATE) break;
 
+#if NrOfRXPDO > 0
+    {
+      uint8_t i;
       for(i = 0; i < NrOfRXPDO; i++){
         if((frame.cob_id == RPDO[i].cob_id) && RPDO[i].valid){
           Canopen_rxPDO(frame.data, i+1);
           break;
         }
       }
+    }
 #endif
+
+#if NrOfTXPDO > 0
+    {
+      uint8_t i;
+      if(frame.rtr != 1) break;
+
+      for(i = 0; i < NrOfTXPDO; i++){
+        if((frame.cob_id == TPDO[i].cob_id) && TPDO[i].valid && TPDO[i].RTR){
+
+          if(TPDO[i].PDO_TransType == 0xFC){ // RTR-only (synchronous)
+            // Send last synchronize PDO frame
+            // TODO
+          }else if(TPDO[i].PDO_TransType == 0xFD){ // RTR-only (event-driven)
+            // Sampling now and send immediately
+            Canopen_txPDO_Proc(i+1);
+          }else break;
+
+        }
+      }
+    }
+#endif
+
       break;
     }
   }

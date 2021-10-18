@@ -9,6 +9,7 @@
 
 typedef struct{
   uint16_t cob_id;
+  uint8_t rtr;
   uint8_t len;
   uint8_t data[8];
 }CAN_FRAME;
