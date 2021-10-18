@@ -129,16 +129,29 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
 
       case 0x01: // COB-ID used by TPDO
         mapped_data32 = (uint32_t*)subInstance->data;
-        check_bit = mapped_data32[0] ^ mapped_data32[1];
-        if(check_bit == 0x80000000){  // Only Valid bit change
+        if(mapped_data32[0] & 0x80000000){
+          // If TPDO is valid, only valid(bit 31) and RTR(bit 30) can be change
+          check_bit = mapped_data32[0] ^ mapped_data32[1];
+          check_bit &= 0x3FFFFFFF;
+          if(check_bit != 0) return 0x06090030;
+
           mapped_data32[0] = mapped_data32[1];
           TPDO[Index - 0x1800].valid = mapped_data32[0] & 0x80000000 ? 0 : 1;
+          TPDO[Index - 0x1800].RTR = mapped_data32[0] & 0x40000000 ? 0 : 1;
+
           *go_next = 0;
           return 0;
-        }else if(check_bit == 0){ // Not change
+        }else{ // If TPDO is not vaid
+          // Only support CAN base frame
+          if(mapped_data32[1] & 0x3F000000) return 0x06090030;
+
+          mapped_data32[0] = mapped_data32[1];
+          TPDO[Index - 0x1800].valid = mapped_data32[0] & 0x80000000 ? 0 : 1;
+          TPDO[Index - 0x1800].RTR = mapped_data32[0] & 0x40000000 ? 0 : 1;
+
           *go_next = 0;
           return 0;
-        }else return 0x06090030;  
+        }
 
       case 0x02: // Transmission Type  
         mapped_data8 = (uint8_t*)subInstance->data;

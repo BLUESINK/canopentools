@@ -9,6 +9,7 @@ typedef struct{
   uint8_t PDO_TransType;
   uint8_t valid;
   uint8_t new_data;
+  uint8_t RTR;
   uint16_t cob_id;
 }CANOPEN_PDO;
 
