@@ -43,11 +43,11 @@ void Canopen_SYNC(){
       TPDO[i].PDO_SYNC_Cnt ++;
       if(TPDO[i].PDO_TransType < 0xF1){ // Synchronous
         if(TPDO[i].PDO_SYNC_Cnt >= TPDO[i].PDO_TransType){
-          Canopen_txPDO_Proc(i+1);
+          Canopen_txPDO_Proc(i+1, 0);
           TPDO[i].PDO_SYNC_Cnt = 0;
         }
       }else if(TPDO[i].PDO_TransType == 0xFC){ // RTR-only (Synchronous)
-        // TODO...
+        Canopen_txPDO_Proc(i+1, 1);
       }
     }
   }

@@ -156,10 +156,13 @@ void Canopen_Loop(uint32_t ctime){
 
           if(TPDO[i].PDO_TransType == 0xFC){ // RTR-only (synchronous)
             // Send last synchronize PDO frame
-            // TODO
+            if(TPDO[i].buffer.cob_id == TPDO[i].cob_id){
+              Canopen_PutTxFIFO(&TPDO[i].buffer);
+              TPDO[i].buffer.cob_id = 0;
+            }
           }else if(TPDO[i].PDO_TransType == 0xFD){ // RTR-only (event-driven)
             // Sampling now and send immediately
-            Canopen_txPDO_Proc(i+1);
+            Canopen_txPDO_Proc(i+1, 0);
           }else break;
 
         }

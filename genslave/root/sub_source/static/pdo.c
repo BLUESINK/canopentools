@@ -12,7 +12,7 @@ CANOPEN_PDO RPDO[NrOfRXPDO];
 CANOPEN_PDO TPDO[NrOfTXPDO];
 #endif
 
-void Canopen_txPDO_Proc(uint8_t channel){
+void Canopen_txPDO_Proc(uint8_t channel, uint8_t buffered){
 
   uint8_t i, j;
   
@@ -90,12 +90,18 @@ void Canopen_txPDO_Proc(uint8_t channel){
     
   }
   
-  _canopen.res.cob_id = TPDO[channel-1].cob_id;
-  _canopen.res.len = (pdoMappingBitOffset - 1) / 8 + 1;
-  memcpy(_canopen.res.data, &dummy64, 8);
-  
-  Canopen_PutTxFIFO(&_canopen.res);
-  
+  if(buffered == 1){
+    TPDO[channel-1].buffer.cob_id = TPDO[channel-1].cob_id;
+    TPDO[channel-1].buffer.len = (pdoMappingBitOffset - 1) / 8 + 1;
+    memcpy(TPDO[channel-1].buffer.data, &dummy64, 8);
+  }else{
+    _canopen.res.cob_id = TPDO[channel-1].cob_id;
+    _canopen.res.len = (pdoMappingBitOffset - 1) / 8 + 1;
+    memcpy(_canopen.res.data, &dummy64, 8);
+    
+    Canopen_PutTxFIFO(&_canopen.res);    
+  }
+
   return;
 }
 
