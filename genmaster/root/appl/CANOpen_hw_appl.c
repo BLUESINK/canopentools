@@ -14,7 +14,7 @@
 /* USER CODE END 0 */  
 
 
-void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len){
+void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len, uint8_t rtr){
 
   /* USER CODE BEGIN 1 */
 {{ user['1'] }}

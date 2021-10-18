@@ -35,6 +35,7 @@ typedef struct CO_PDOStruct{
 // CANOpen Interface Functions
 /*****************************************************************************/
 extern CO_Status CANOpen_sendSync();
+extern CO_Status CANOpen_sendTpdoRTR(uint8_t nodeId, uint8_t channel);
 
 extern CO_Status CANOpen_NMT(CO_NMT state, uint8_t id);
 

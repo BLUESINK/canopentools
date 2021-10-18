@@ -20,7 +20,24 @@ CO_Status CANOpen_sendSync(){
   cobID = 0x80;
   
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 0);
+  CANOpen_sendFrame(cobID, txData, 0, 0);
+  
+  return CO_OK;
+}
+
+CO_Status CANOpen_sendTpdoRTR(uint8_t nodeId, uint8_t channel){
+  // Create TPDO RTR frame
+  switch(channel){
+    case 1 : cobID = 0x180; break;
+    case 2 : cobID = 0x280; break;
+    case 3 : cobID = 0x380; break;
+    case 4 : cobID = 0x480; break;
+    default : return CO_ERROR;
+  }
+  cobID |= nodeId;
+  
+  // Send frame
+  CANOpen_sendFrame(cobID, txData, 0, 1);
   
   return CO_OK;
 }
@@ -56,7 +73,7 @@ CO_Status CANOpen_NMT(CO_NMT state, uint8_t id){
   }
 
   len = 2;
-  CANOpen_sendFrame(0x00, data, len);
+  CANOpen_sendFrame(0x00, data, len, 0);
 
   return CO_OK;
 }
@@ -83,7 +100,7 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
   memcpy(txData + 4, data, len);
   
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 8);
+  CANOpen_sendFrame(cobID, txData, 8, 0);
   
   if(timeout == 0) return CO_OK;
   
@@ -129,7 +146,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
   memset(txData + 4, 0, 4);
 
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 8);
+  CANOpen_sendFrame(cobID, txData, 8, 0);
   
   tx_timeout = timeout;
   while(tx_timeout != 0){
@@ -205,7 +222,7 @@ CO_Status CANOpen_sendPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
 
   // Send frame
   total_byte = (total_bit - 1) /8 + 1;
-  CANOpen_sendFrame(cobID, txData, total_byte);
+  CANOpen_sendFrame(cobID, txData, total_byte, 0);
   
   return CO_OK;
 }
