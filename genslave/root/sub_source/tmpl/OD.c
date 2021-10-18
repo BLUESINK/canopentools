@@ -40,6 +40,8 @@ OD_STATE OD_INIT(uint8_t NODEID){
   {%- elif subindex.data['DataTypeStr'][2] == 'Extended' %}
   memcpy(OD_0x{{ index.name }}_{{ subindex.name }}, {{ subindex.data['DefaultValue'] }}, {{ (subindex.data['DataTypeStr'][1]/8)|int }});
   {%- endif %}
+  {%- else %}
+  OD_0x{{ index.name }}_{{ subindex.name }} = 0;
   {%- endif %}
   {%- endfor %}
   {% endfor %}
