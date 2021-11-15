@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 BLUESINK Co., Ltd.
+ *
+ * Use of this source code is governed by an MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT.
+ *
+ */
+
 #ifndef __CANOPENSLIM_H__
 #define __CANOPENSLIM_H__
 
