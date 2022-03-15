@@ -90,6 +90,7 @@ void Canopen_txPDO_Proc(uint8_t channel, uint8_t buffered){
     
   }
   
+#if NrOfTXPDO > 0
   if(buffered == 1){
     TPDO[channel-1].buffer.cob_id = TPDO[channel-1].cob_id;
     TPDO[channel-1].buffer.len = (pdoMappingBitOffset - 1) / 8 + 1;
@@ -101,6 +102,7 @@ void Canopen_txPDO_Proc(uint8_t channel, uint8_t buffered){
     
     Canopen_PutTxFIFO(&_canopen.res);    
   }
+#endif
 
   return;
 }

@@ -43,7 +43,7 @@ def generate(eds_filepath, desc_folderpath, output_folderpath, show):
 		index['prefix'] = prefix
 
 		# Add Index description
-		desc_path = os.path.join(desc_folderpath, 'key.txt')
+		desc_path = os.path.join(desc_folderpath, key + '.txt')
 		if os.path.isfile(desc_path) :
 			f = open(desc_path, 'r')
 			index['description'] = f.read()

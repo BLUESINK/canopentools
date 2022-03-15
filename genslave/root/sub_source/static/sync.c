@@ -14,6 +14,7 @@ extern CANOPEN_PDO TPDO[NrOfTXPDO];
 void Canopen_SYNC(){
 
   uint8_t i;
+  
 #if NrOfRXPDO > 0
 
   if(_canopen.state != OPERATIONAL_STATE) return;
