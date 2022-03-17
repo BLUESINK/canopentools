@@ -50,8 +50,9 @@ def postproc(rootItem) :
 				subindex.data['AccessTypeStr'] = 'OD_ACCESS_READ'			
 
 			# [[ Add PDO Mappable string ]]
-			if subindex.data['PDOMapping'] == '1':
-				subindex.data['AccessTypeStr'] = subindex.data['AccessTypeStr'] + ' | OD_ACCESS_MAPPABLE'
+			if hasattr(subindex.data, 'PDOMapping') :
+				if subindex.data['PDOMapping'] == '1':
+					subindex.data['AccessTypeStr'] = subindex.data['AccessTypeStr'] + ' | OD_ACCESS_MAPPABLE'
 
 			# [[ Add Data type string ]]
 			if subindex.data['DataType'] in dataType:
