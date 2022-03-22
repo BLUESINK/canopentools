@@ -26,7 +26,7 @@ void Canopen_SYNC(){
       if(RPDO[i].PDO_TransType < 0xF1){ // Synchronous
         if(RPDO[i].PDO_SYNC_Cnt >= RPDO[i].PDO_TransType){
           RPDO[i].new_data = 0;
-          Canopne_rxPDO_Proc(RPDO[i].PDO_Buffer, i+1);
+          Canopen_rxPDO_Proc(RPDO[i].PDO_Buffer, i+1);
           RPDO[i].PDO_SYNC_Cnt = 0;
         }
       }      

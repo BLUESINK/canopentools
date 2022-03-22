@@ -17,7 +17,7 @@ typedef struct{
 }CANOPEN_PDO;
 
 extern void Canopen_txPDO_Proc(uint8_t channel, uint8_t buffered);
-extern void Canopne_rxPDO_Proc(uint8_t* data, uint8_t channel);
+extern void Canopen_rxPDO_Proc(uint8_t* data, uint8_t channel);
 
 extern void Canopen_rxPDO(uint8_t* data, uint8_t channel);
 

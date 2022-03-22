@@ -107,7 +107,7 @@ void Canopen_txPDO_Proc(uint8_t channel, uint8_t buffered){
   return;
 }
 
-void Canopne_rxPDO_Proc(uint8_t* data, uint8_t channel){
+void Canopen_rxPDO_Proc(uint8_t* data, uint8_t channel){
   uint8_t i, j;
 
   uint64_t dummy64;
