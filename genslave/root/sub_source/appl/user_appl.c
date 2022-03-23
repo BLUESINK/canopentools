@@ -38,7 +38,7 @@ uint32_t Canopen_Application_AfterGetData(uint16_t Index, uint8_t subIndex){
 /* USER CODE END 4 */
 
 // Call when master wants to reset application
-void Canopen_Application_ResetAppl(){
+void Canopen_Application_Event(CANOPEN_EVENT event){
   /* USER CODE BEGIN 5 */
 {{ user['5'] }}
   /* USER CODE END 5 */
@@ -47,10 +47,3 @@ void Canopen_Application_ResetAppl(){
 /* USER CODE BEGIN 6 */
 {{ user['6'] }}
 /* USER CODE END 6 */
-
-// Call when master wants to rest communication
-void Canopen_Application_ResetComm(){
-  /* USER CODE BEGIN 7 */
-{{ user['7'] }}
-  /* USER CODE END 7 */
-}

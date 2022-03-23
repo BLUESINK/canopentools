@@ -31,6 +31,11 @@ typedef struct{
   OD_INTERFACE          od_req;
 }CANOPEN;
 
+typedef enum{
+  APPLICATION_RESET_EVENT,
+  COMMUNICATION_RESET_EVENT
+}CANOPEN_EVENT;
+
 extern CANOPEN _canopen;
 
 #endif

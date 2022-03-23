@@ -5,7 +5,6 @@
 
 extern uint32_t Canopen_Application_BeforeSendData(uint16_t Index, uint8_t subIndex);
 extern uint32_t Canopen_Application_AfterGetData(uint16_t Index, uint8_t subIndex);
-extern void Canopen_Application_ResetAppl();
-extern void Canopen_Application_ResetComm();
+extern void Canopen_Application_Event(CANOPEN_EVENT event);
 
 #endif

@@ -46,14 +46,14 @@ void Canopen_ChangeState(CANOPEN_STATE state){
 
   switch(state){
     case RESET_APPLICATION_STATE:
-      Canopen_Application_ResetAppl();
+      Canopen_Application_Event(APPLICATION_RESET_EVENT);
       _canopen.state = state;
       Canopen_ChangeState(RESET_COMMUNICATION_STATE);
       break;
 
     case RESET_COMMUNICATION_STATE:
       Canopen_Init();
-      Canopen_Application_ResetComm();
+      Canopen_Application_Event(COMMUNICATION_RESET_EVENT);
       _canopen.state = state;
       Canopen_ChangeState(PRE_OPERATIONAL_STATE);
       break;
