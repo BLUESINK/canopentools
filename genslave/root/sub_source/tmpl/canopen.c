@@ -19,6 +19,8 @@ extern CANOPEN_PDO TPDO[NrOfTXPDO];
 #endif
 
 static uint8_t nodeguard_toggle = 0;
+static uint32_t last_nodeguard_request = 0;
+static uint8_t nodeguard_event_occcur = 0;
 
 void Canopen_Init(){
 
@@ -55,6 +57,7 @@ void Canopen_ChangeState(CANOPEN_STATE state){
 
     case RESET_COMMUNICATION_STATE:
       Canopen_Init();
+      nodeguard_event_occcur = 0;
       nodeguard_toggle = 0; // Only NMT reset communication set toggle bit to 0
       Canopen_Application_Event(COMMUNICATION_RESET_EVENT);
       _canopen.state = state;
@@ -98,6 +101,10 @@ void Canopen_Loop(uint32_t ctime){
   CAN_FRAME frame;
   CAN_FRAME nodeguard_frame;
 
+  static uint32_t canopen_looptime = 0;
+
+  canopen_looptime += ctime;
+
 #if HEARTBEAT
   // Heartbeat Producer
   static uint32_t heartbeat_counter = 0;
@@ -115,6 +122,19 @@ void Canopen_Loop(uint32_t ctime){
   }
 #endif
 
+#if OD_LIFE_TIME_FACTOR
+  if(OD_0x100C_00 != 0 &&
+     OD_0x100D_00 != 0 &&
+     nodeguard_event_occcur == 0){
+    if((canopen_looptime - last_nodeguard_request) > OD_0x100C_00 * OD_0x100D_00 * 1000){
+        Canopen_Application_Event(LIFE_GUARDING_EVENT);
+        nodeguard_event_occcur = 1;
+    }
+  }else{
+    last_nodeguard_request = canopen_looptime;
+  }
+#endif
+
   while(Canopen_GetRxFIFO(&frame)){
     switch(frame.cob_id >> 7){
     case 0x0C: // RX-SDO
@@ -126,6 +146,9 @@ void Canopen_Loop(uint32_t ctime){
         if(_canopen.state != STOPPPED_STATE &&
            _canopen.state != OPERATIONAL_STATE &&
            _canopen.state != PRE_OPERATIONAL_STATE) break;
+
+        last_nodeguard_request = canopen_looptime;
+        nodeguard_event_occcur = 0;
 
         nodeguard_frame.cob_id = 0x700 | _canopen.node_id;
         nodeguard_frame.len = 1;

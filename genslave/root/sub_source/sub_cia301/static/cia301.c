@@ -192,6 +192,23 @@ uint32_t cia301_proc(uint16_t Index, uint8_t subIndex, uint8_t* go_next){
   if(Index == 0x1017 && subIndex == 0x00){
     OD_0x1017_00 = OD_0x1017_00_buf;
     *go_next = 0;
+    return 0;
+  }
+#endif
+
+#if OD_GUARD_TIME
+  if(Index == 0x100C && subIndex == 0x00){
+    OD_0x100C_00 = OD_0x100C_00_buf;
+    *go_next = 0;
+    return 0;
+  }
+#endif
+
+#if OD_LIFE_TIME_FACTOR
+  if(Index == 0x100D && subIndex == 0x00){
+    OD_0x100D_00 = OD_0x100D_00_buf;
+    *go_next = 0;
+    return 0;
   }
 #endif
 
