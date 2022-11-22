@@ -13,6 +13,7 @@ if __name__ == '__main__' :
 	parser_a.add_argument('OUTPUT_PATH', type=str, help='Destination folder path of CANOpen Slave Stack Code')
 
 	parser_b = subparsers.add_parser('genmaster', help='CANOpen Master Stack Code generator')
+	parser_b.add_argument('--cpp', action='store_true', help='Create cpp template file')
 	parser_b.add_argument('OUTPUT_PATH', type=str, help='Destination folder path of CANOpen Master Stack Code')
 
 	parser_c = subparsers.add_parser('gendoc', help='Document generator based on EDS file')
@@ -28,4 +29,4 @@ if __name__ == '__main__' :
 	if args.cmd == 'gendoc' :
 		gendoc.generate(args.EDS_FILE, args.DESC_PATH, args.OUTPUT_PATH, args.show)
 	if args.cmd == 'genmaster' :
-		genmaster.generate(args.OUTPUT_PATH)
+		genmaster.generate(args.OUTPUT_PATH, args.cpp)
