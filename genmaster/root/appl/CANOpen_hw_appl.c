@@ -23,7 +23,7 @@
 /* USER CODE END 0 */  
 
 
-void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len, uint8_t rtr){
+void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len, uint8_t rtr, void* privData){
 
   /* USER CODE BEGIN 1 */
 {{ user['1'] }}
@@ -31,7 +31,7 @@ void CANOpen_sendFrame(uint16_t cobID, uint8_t* data, uint8_t len, uint8_t rtr){
 
 }
 
-int CANOpen_mutexLock(){
+int CANOpen_mutexLock(void* privData){
 
   /* USER CODE BEGIN 2 */
 {{ user['2'] }}
@@ -39,7 +39,7 @@ int CANOpen_mutexLock(){
 
 }
 
-int CANOpen_mutexUnlock(){
+int CANOpen_mutexUnlock(void* privData){
 
   /* USER CODE BEGIN 3 */
 {{ user['3'] }}

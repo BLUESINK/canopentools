@@ -24,12 +24,14 @@ static uint16_t cobID;
 static uint8_t txData[8];
 static volatile uint16_t tx_timeout;
 
+static void* userPrivData = NULL;
+
 CO_Status CANOpen_sendSync(){
   // Create sync frame
   cobID = 0x80;
   
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 0, 0);
+  CANOpen_sendFrame(cobID, txData, 0, 0, userPrivData);
   
   return CO_OK;
 }
@@ -46,7 +48,7 @@ CO_Status CANOpen_sendTpdoRTR(uint8_t nodeId, uint8_t channel){
   cobID |= nodeId;
   
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 0, 1);
+  CANOpen_sendFrame(cobID, txData, 0, 1, userPrivData);
   
   return CO_OK;
 }
@@ -82,7 +84,7 @@ CO_Status CANOpen_NMT(CO_NMT state, uint8_t id){
   }
 
   len = 2;
-  CANOpen_sendFrame(0x00, data, len, 0);
+  CANOpen_sendFrame(0x00, data, len, 0, userPrivData);
 
   return CO_OK;
 }
@@ -109,7 +111,7 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
   memcpy(txData + 4, data, len);
   
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 8, 0);
+  CANOpen_sendFrame(cobID, txData, 8, 0, userPrivData);
   
   if(timeout == 0) return CO_OK;
   
@@ -126,10 +128,10 @@ CO_Status CANOpen_writeOD(uint8_t nodeId,
       if(filled_entry->data[2] != txData[2]) continue;
       if(filled_entry->data[3] != txData[3]) continue;
 
-      CANOpen_mutexLock();
+      CANOpen_mutexLock(userPrivData);
       CANOpen_list_del(filled_entry);
       CANOpen_list_add_prev(filled_entry, &general_empty_head);
-      CANOpen_mutexUnlock();
+      CANOpen_mutexUnlock(userPrivData);
       return CO_OK;
     }
   }
@@ -155,7 +157,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
   memset(txData + 4, 0, 4);
 
   // Send frame
-  CANOpen_sendFrame(cobID, txData, 8, 0);
+  CANOpen_sendFrame(cobID, txData, 8, 0, userPrivData);
   
   tx_timeout = timeout;
   while(tx_timeout != 0){
@@ -170,7 +172,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       if(filled_entry->data[2] != txData[2]) continue;
       if(filled_entry->data[3] != txData[3]) continue;
 
-      CANOpen_mutexLock();
+      CANOpen_mutexLock(userPrivData);
 
       if(len != NULL && data != NULL){
         *len = 4 - ((filled_entry->data[0] & 0x0C) >> 2);
@@ -179,7 +181,7 @@ CO_Status CANOpen_readOD(uint8_t nodeId,
       
       CANOpen_list_del(filled_entry);
       CANOpen_list_add_prev(filled_entry, &general_empty_head);
-      CANOpen_mutexUnlock();
+      CANOpen_mutexUnlock(userPrivData);
       return CO_OK;
     }
   }
@@ -231,7 +233,7 @@ CO_Status CANOpen_sendPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
 
   // Send frame
   total_byte = (total_bit - 1) /8 + 1;
-  CANOpen_sendFrame(cobID, txData, total_byte, 0);
+  CANOpen_sendFrame(cobID, txData, total_byte, 0, userPrivData);
   
   return CO_OK;
 }
@@ -263,7 +265,7 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
       tpdo_entry = tpdo_entry->next;
       if(tpdo_entry->cobID != cobID_target) continue;
 
-      CANOpen_mutexLock();    
+      CANOpen_mutexLock(userPrivData);    
 
       memcpy(&tmp64, tpdo_entry->data, 8);
       for(j = 0; j < pdo_struct->mappinglen; j++){
@@ -274,7 +276,7 @@ CO_Status CANOpen_readPDO(uint8_t nodeId, uint8_t channel, CO_PDOStruct* pdo_str
 
       CANOpen_list_del(tpdo_entry);
       CANOpen_list_add_prev(tpdo_entry, &tpdo_empty_head);
-      CANOpen_mutexUnlock();
+      CANOpen_mutexUnlock(userPrivData);
       return CO_OK;
     }
   }
@@ -350,7 +352,7 @@ void CANOpen_mappingPDO_int8(CO_PDOStruct* pdo_struct, int8_t* data){
 }
 
 
-void CANOpen_init(){
+void CANOpen_init(void* privData){
   CANOpen_list_init(&general_filled_head);
   CANOpen_list_init(&general_empty_head);
 
@@ -362,13 +364,15 @@ void CANOpen_init(){
     CANOpen_list_add_prev(&general_buff[i], &general_empty_head);
     CANOpen_list_add_prev(&tpdo_buff[i], &tpdo_empty_head);
   }
+
+  userPrivData = privData;
 }
 
 void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
 
   uint16_t fcode = (cobID & 0x780) >> 7;
 
-  CANOpen_mutexLock();
+  CANOpen_mutexLock(userPrivData);
   
   if(fcode > 2 && fcode < 11 && (fcode % 2) == 1){ // [[ TPDO frame ]]
 
@@ -415,7 +419,7 @@ void CANOpen_addRxBuffer(uint16_t cobID, uint8_t* data){
     CANOpen_list_add_next(empty_entry, &general_filled_head);    
   }
 
-  CANOpen_mutexUnlock();
+  CANOpen_mutexUnlock(userPrivData);
   
 }
 
