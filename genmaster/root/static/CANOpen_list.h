@@ -21,22 +21,22 @@ static inline void CANOpen_list_init(CO_LIST *list){
 	list->prev = list;
 }
 
-static inline void CANOpen_list_add(CO_LIST *new,
+static inline void CANOpen_list_add(CO_LIST *o,
 	CO_LIST *prev,
 	CO_LIST *next)
 {
-	next->prev = new;
-	new->next = next;
-	new->prev = prev;
-	prev->next = new;
+	next->prev = o;
+	o->next = next;
+	o->prev = prev;
+	prev->next = o;
 }
 
-static inline void CANOpen_list_add_next(CO_LIST *new, CO_LIST *head){
-	CANOpen_list_add(new, head, head->next);
+static inline void CANOpen_list_add_next(CO_LIST *o, CO_LIST *head){
+	CANOpen_list_add(o, head, head->next);
 }
 
-static inline void CANOpen_list_add_prev(CO_LIST *new, CO_LIST *head){
-	CANOpen_list_add(new, head->prev, head);
+static inline void CANOpen_list_add_prev(CO_LIST *o, CO_LIST *head){
+	CANOpen_list_add(o, head->prev, head);
 }
 
 static inline void CANOpen_list_del(CO_LIST *entry){
